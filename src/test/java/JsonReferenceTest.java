@@ -99,7 +99,7 @@ public class JsonReferenceTest {
     }
 
     @Test
-    public void testProcess() throws IOException {
+    public void testProcess() throws IOException, JsonReferenceException, JsonPointerException {
 
         ObjectMapper mapper = new ObjectMapper();
         JsonNode node = mapper.readTree(new File("src/test/resources/nest.json"));

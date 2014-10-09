@@ -2,7 +2,7 @@
   "a": 3,
   "b": 4,
   "c": {
-    "$ref": "a.json#"
+    "$ref": "ref.json#"
   },
   "nest": [
     {
