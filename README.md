@@ -1,2 +1,2 @@
-json-reference
+jackson-json-reference
 ==============
