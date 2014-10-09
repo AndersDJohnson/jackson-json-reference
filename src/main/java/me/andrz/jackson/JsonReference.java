@@ -23,12 +23,25 @@ public class JsonReference {
 
     private String uri;
     private String fragment;
-    private JsonNode rootJson;
+    private JsonNode context;
     private String relativeTo;
 
-
     public JsonReference (String ref) {
+        this.parseReference(ref);
+    }
 
+    public JsonReference (String ref, JsonNode context) {
+        this.context = context;
+        this.parseReference(ref);
+    }
+
+    public JsonReference (String ref, String context) throws IOException {
+        JsonNode node = mapper.readTree(context);
+        this.context = node;
+        this.parseReference(ref);
+    }
+
+    public void parseReference(String ref) {
         String uri;
         String fragment = null;
 
@@ -41,9 +54,7 @@ public class JsonReference {
         }
         this.uri = uri;
         this.fragment = fragment;
-
     }
-
 
     public JsonNode resolve() throws IOException, JsonPointerException {
 
@@ -55,17 +66,15 @@ public class JsonReference {
         return refJsonNode;
     }
 
-    public static void process(JsonNode node) {
+    public static void process(JsonContext context) {
 
-        final JsonNode finalNode = JsonNodeClone.copy(node);
+        JsonNode node = context.getNode();
+
+//        final JsonNode finalNode = JsonNodeClone.copy(node);
+        final JsonContext finalContext = context.clone();
 
         JsonNodeTraverse.traverse(node, new CatchAndRethrowClosure<JsonNode>() {
             public void executeAndThrow(JsonNode subNode) throws JsonReferenceException, IOException, JsonPointerException {
-
-//                if (subNode.has("$ref")) {
-//                    System.out.println("$ref node: " + subNode );
-//                }
-//                subNode.findParent("$ref");
 
                 if (subNode.isArray()) {
                     ArrayNode arrayNode = (ArrayNode) subNode;
@@ -75,7 +84,7 @@ public class JsonReference {
                         JsonNode value = elements.next();
 
                         if (value.has("$ref")) {
-                            JsonNode replacement = getReplacement(value, finalNode);
+                            JsonNode replacement = getReplacement(value, finalContext);
                             System.out.println("replacing " + value + " with " + replacement);
                             arrayNode.set(i, replacement);
                             ++i;
@@ -94,7 +103,7 @@ public class JsonReference {
                         System.out.println("key=" + key);
 
                         if (value.has("$ref")) {
-                            JsonNode replacement = getReplacement(value, finalNode);
+                            JsonNode replacement = getReplacement(value, finalContext);
                             System.out.println("replacing " + value + " with " + replacement);
                             objectNode.set(key, replacement);
                         }
@@ -105,7 +114,7 @@ public class JsonReference {
 
     }
 
-    private static JsonNode getReplacement(JsonNode node, JsonNode rootNode) throws JsonReferenceException, IOException, JsonPointerException {
+    private static JsonNode getReplacement(JsonNode node, JsonContext finalContext) throws JsonReferenceException, IOException, JsonPointerException {
         JsonNode ref = node.get("$ref");
         if (! ref.isTextual()) {
             throw new JsonReferenceException("$ref not textual for node=" + node);
@@ -113,32 +122,33 @@ public class JsonReference {
         String refString = ref.textValue();
 
         JsonReference jsonReference = new JsonReference(refString);
+        jsonReference.setRelativeTo(finalContext.getPath());
         JsonNode replacement = jsonReference.resolve();
+
         return replacement;
     }
 
     private JsonNode getReferencedJsonNode() throws IOException {
 
-        if (rootJson != null) {
-            return rootJson;
-        }
-
         JsonNode referencedJsonNode;
 
-        if (isUriUrl()) {
-            URL url = new URL(uri);
-            referencedJsonNode = mapper.readTree(url);
+        if (uri != null && ! "".equals(uri)) {
+            if (isUriUrl()) {
+                URL url = new URL(uri);
+                referencedJsonNode = mapper.readTree(url);
+            } else {
+                String relUri;
+                if (relativeTo == null) {
+                    relUri = uri;
+                } else {
+                    relUri = relativeTo + "/" + uri;
+                }
+                File file = new File(relUri);
+                referencedJsonNode = mapper.readTree(file);
+            }
         }
         else {
-            String relUri;
-            if (relativeTo == null) {
-                relUri = uri;
-            }
-            else {
-                relUri = relativeTo + "/" + uri;
-            }
-            File file = new File(relUri);
-            referencedJsonNode = mapper.readTree(file);
+            referencedJsonNode = context;
         }
 
         return referencedJsonNode;
@@ -165,16 +175,12 @@ public class JsonReference {
         this.fragment = fragment;
     }
 
-    public JsonNode getRootJson() {
-        return rootJson;
+    public JsonNode getContext() {
+        return context;
     }
 
-    public void setRootJson(JsonNode rootJson) {
-        this.rootJson = rootJson;
-    }
-
-    public void setRootJsonNode(String rootJsonNode) throws IOException {
-        this.rootJson = mapper.readTree(rootJsonNode);
+    public void setContext(JsonNode context) {
+        this.context = context;
     }
 
     public String getRelativeTo() {
