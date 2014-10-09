@@ -66,51 +66,54 @@ public class JsonReference {
         return refJsonNode;
     }
 
-    public static void process(JsonContext context) {
-
+    public static void process(JsonContext context) throws JsonReferenceException, IOException, JsonPointerException {
         JsonNode node = context.getNode();
+        process(context, node);
+    }
 
-//        final JsonNode finalNode = JsonNodeClone.copy(node);
-        final JsonContext finalContext = context.clone();
+    public static void process(JsonContext context, JsonNode node) throws JsonReferenceException, IOException, JsonPointerException {
 
-        JsonNodeTraverse.traverse(node, new CatchAndRethrowClosure<JsonNode>() {
-            public void executeAndThrow(JsonNode subNode) throws JsonReferenceException, IOException, JsonPointerException {
+        if (node.isArray()) {
+            ArrayNode arrayNode = (ArrayNode) node;
+            Iterator<JsonNode> elements = arrayNode.elements();
+            int i = 0;
+            while (elements.hasNext()) {
+                JsonNode subNode = elements.next();
 
-                if (subNode.isArray()) {
-                    ArrayNode arrayNode = (ArrayNode) subNode;
-                    Iterator<JsonNode> elements = arrayNode.elements();
-                    int i = 0;
-                    while (elements.hasNext()) {
-                        JsonNode value = elements.next();
+                if (subNode.has("$ref")) {
+                    JsonNode replacement = getReplacement(subNode, context);
 
-                        if (value.has("$ref")) {
-                            JsonNode replacement = getReplacement(value, finalContext);
-                            System.out.println("replacing " + value + " with " + replacement);
-                            arrayNode.set(i, replacement);
-                            ++i;
-                        }
-                    }
+                    System.out.println("replacing " + subNode + " with " + replacement);
+                    arrayNode.set(i, replacement);
+                    ++i;
                 }
-                else if (subNode.isObject()) {
-                    ObjectNode objectNode = (ObjectNode) subNode;
-
-                    Iterator<Map.Entry<String, JsonNode>> fields = objectNode.fields();
-                    while (fields.hasNext()) {
-                        Map.Entry<String, JsonNode> field = fields.next();
-                        String key = field.getKey();
-                        JsonNode value = field.getValue();
-
-                        System.out.println("key=" + key);
-
-                        if (value.has("$ref")) {
-                            JsonNode replacement = getReplacement(value, finalContext);
-                            System.out.println("replacing " + value + " with " + replacement);
-                            objectNode.set(key, replacement);
-                        }
-                    }
+                else {
+                    process(context, subNode);
                 }
             }
-        });
+        }
+        else if (node.isObject()) {
+            ObjectNode objectNode = (ObjectNode) node;
+
+            Iterator<Map.Entry<String, JsonNode>> fields = objectNode.fields();
+            while (fields.hasNext()) {
+                Map.Entry<String, JsonNode> field = fields.next();
+                String key = field.getKey();
+                JsonNode subNode = field.getValue();
+
+                System.out.println("key=" + key);
+
+                if (subNode.has("$ref")) {
+                    JsonNode replacement = getReplacement(subNode, context);
+
+                    System.out.println("replacing " + subNode + " with " + replacement);
+                    objectNode.set(key, replacement);
+                }
+                else {
+                    process(context, subNode);
+                }
+            }
+        }
 
     }
 
@@ -124,6 +127,15 @@ public class JsonReference {
         JsonReference jsonReference = new JsonReference(refString);
         jsonReference.setRelativeTo(finalContext.getPath());
         JsonNode replacement = jsonReference.resolve();
+
+        String path = jsonReference.getUri();
+        String parentPath = finalContext.getPath();
+        File refFile = new File(parentPath, path);
+        String refParent = refFile.getParent();
+
+        JsonContext replacementContext = new JsonContext(replacement, refParent);
+        // recursive process
+        process(replacementContext, replacement);
 
         return replacement;
     }
