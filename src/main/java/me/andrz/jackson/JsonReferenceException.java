@@ -1,7 +1,7 @@
 package me.andrz.jackson;
 
 /**
- * Created by Anders on 10/8/2014.
+ *
  */
 public class JsonReferenceException extends Exception {
 

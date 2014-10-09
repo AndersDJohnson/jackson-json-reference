@@ -3,8 +3,7 @@ package me.andrz.jackson;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.node.*;
 import com.github.fge.jackson.jsonpointer.*;
-import org.apache.commons.collections4.*;
-import org.apache.commons.collections4.functors.*;
+import org.apache.logging.log4j.*;
 
 import java.io.*;
 import java.net.*;
@@ -12,9 +11,11 @@ import java.util.*;
 import java.util.regex.*;
 
 /**
- * Created by Anders on 10/7/2014.
+ *
  */
 public class JsonReference {
+
+    private static final Logger logger = LogManager.getLogger(JsonReference.class);
 
     public static final Pattern pattern = Pattern.compile("([^\\#]*)(\\#(.*))?");
 
@@ -23,21 +24,21 @@ public class JsonReference {
 
     private String uri;
     private String fragment;
-    private JsonNode context;
+    private JsonNode contextNode;
     private String relativeTo;
 
     public JsonReference (String ref) {
         this.parseReference(ref);
     }
 
-    public JsonReference (String ref, JsonNode context) {
-        this.context = context;
+    public JsonReference (String ref, JsonNode contextNode) {
+        this.contextNode = contextNode;
         this.parseReference(ref);
     }
 
-    public JsonReference (String ref, String context) throws IOException {
-        JsonNode node = mapper.readTree(context);
-        this.context = node;
+    public JsonReference (String ref, String contextNodeString) throws IOException {
+        JsonNode contextNode = mapper.readTree(contextNodeString);
+        this.contextNode = contextNode;
         this.parseReference(ref);
     }
 
@@ -56,16 +57,6 @@ public class JsonReference {
         this.fragment = fragment;
     }
 
-    public JsonNode resolve() throws IOException, JsonPointerException {
-
-        JsonNode referencedJsonNode = getReferencedJsonNode();
-
-        JsonPointer jsonPointer = new JsonPointer(fragment);
-        JsonNode refJsonNode = jsonPointer.get(referencedJsonNode);
-
-        return refJsonNode;
-    }
-
     public static void process(JsonContext context) throws JsonReferenceException, IOException, JsonPointerException {
         JsonNode node = context.getNode();
         process(context, node);
@@ -81,9 +72,9 @@ public class JsonReference {
                 JsonNode subNode = elements.next();
 
                 if (subNode.has("$ref")) {
-                    JsonNode replacement = getReplacement(subNode, context);
+                    JsonNode replacement = resolveForRefNode(subNode, context);
 
-                    System.out.println("replacing " + subNode + " with " + replacement);
+                    logger.debug("replacing " + subNode + " with " + replacement);
                     arrayNode.set(i, replacement);
                     ++i;
                 }
@@ -101,12 +92,12 @@ public class JsonReference {
                 String key = field.getKey();
                 JsonNode subNode = field.getValue();
 
-                System.out.println("key=" + key);
+                logger.debug("key=" + key);
 
                 if (subNode.has("$ref")) {
-                    JsonNode replacement = getReplacement(subNode, context);
+                    JsonNode replacement = resolveForRefNode(subNode, context);
 
-                    System.out.println("replacing " + subNode + " with " + replacement);
+                    logger.debug("replacing " + subNode + " with " + replacement);
                     objectNode.set(key, replacement);
                 }
                 else {
@@ -117,7 +108,7 @@ public class JsonReference {
 
     }
 
-    private static JsonNode getReplacement(JsonNode node, JsonContext finalContext) throws JsonReferenceException, IOException, JsonPointerException {
+    private static JsonNode resolveForRefNode(JsonNode node, JsonContext finalContext) throws JsonReferenceException, IOException, JsonPointerException {
         JsonNode ref = node.get("$ref");
         if (! ref.isTextual()) {
             throw new JsonReferenceException("$ref not textual for node=" + node);
@@ -140,6 +131,15 @@ public class JsonReference {
         return replacement;
     }
 
+    public JsonNode resolve() throws IOException, JsonPointerException {
+        JsonNode referencedJsonNode = getReferencedJsonNode();
+
+        JsonPointer jsonPointer = new JsonPointer(fragment);
+        JsonNode refJsonNode = jsonPointer.get(referencedJsonNode);
+
+        return refJsonNode;
+    }
+
     private JsonNode getReferencedJsonNode() throws IOException {
 
         JsonNode referencedJsonNode;
@@ -160,7 +160,7 @@ public class JsonReference {
             }
         }
         else {
-            referencedJsonNode = context;
+            referencedJsonNode = contextNode;
         }
 
         return referencedJsonNode;
@@ -187,12 +187,12 @@ public class JsonReference {
         this.fragment = fragment;
     }
 
-    public JsonNode getContext() {
-        return context;
+    public JsonNode getContextNode() {
+        return contextNode;
     }
 
-    public void setContext(JsonNode context) {
-        this.context = context;
+    public void setContextNode(JsonNode contextNode) {
+        this.contextNode = contextNode;
     }
 
     public String getRelativeTo() {

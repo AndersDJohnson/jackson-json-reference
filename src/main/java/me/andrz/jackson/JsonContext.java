@@ -3,7 +3,7 @@ package me.andrz.jackson;
 import com.fasterxml.jackson.databind.*;
 
 /**
- * Created by Anders on 10/9/2014.
+ *
  */
 public class JsonContext {
 
