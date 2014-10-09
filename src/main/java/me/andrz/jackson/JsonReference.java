@@ -1,10 +1,14 @@
 package me.andrz.jackson;
 
 import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.node.*;
 import com.github.fge.jackson.jsonpointer.*;
+import org.apache.commons.collections4.*;
+import org.apache.commons.collections4.functors.*;
 
 import java.io.*;
 import java.net.*;
+import java.util.*;
 import java.util.regex.*;
 
 /**
@@ -49,6 +53,68 @@ public class JsonReference {
         JsonNode refJsonNode = jsonPointer.get(referencedJsonNode);
 
         return refJsonNode;
+    }
+
+    public static void process(JsonNode node) {
+
+        final JsonNode finalNode = JsonNodeClone.copy(node);
+
+        JsonNodeTraverse.traverse(node, new CatchAndRethrowClosure<JsonNode>() {
+            public void executeAndThrow(JsonNode subNode) throws JsonReferenceException, IOException, JsonPointerException {
+
+//                if (subNode.has("$ref")) {
+//                    System.out.println("$ref node: " + subNode );
+//                }
+//                subNode.findParent("$ref");
+
+                if (subNode.isArray()) {
+                    ArrayNode arrayNode = (ArrayNode) subNode;
+                    Iterator<JsonNode> elements = arrayNode.elements();
+                    int i = 0;
+                    while (elements.hasNext()) {
+                        JsonNode value = elements.next();
+
+                        if (value.has("$ref")) {
+                            JsonNode replacement = getReplacement(value, finalNode);
+                            System.out.println("replacing " + value + " with " + replacement);
+                            arrayNode.set(i, replacement);
+                            ++i;
+                        }
+                    }
+                }
+                else if (subNode.isObject()) {
+                    ObjectNode objectNode = (ObjectNode) subNode;
+
+                    Iterator<Map.Entry<String, JsonNode>> fields = objectNode.fields();
+                    while (fields.hasNext()) {
+                        Map.Entry<String, JsonNode> field = fields.next();
+                        String key = field.getKey();
+                        JsonNode value = field.getValue();
+
+                        System.out.println("key=" + key);
+
+                        if (value.has("$ref")) {
+                            JsonNode replacement = getReplacement(value, finalNode);
+                            System.out.println("replacing " + value + " with " + replacement);
+                            objectNode.set(key, replacement);
+                        }
+                    }
+                }
+            }
+        });
+
+    }
+
+    private static JsonNode getReplacement(JsonNode node, JsonNode rootNode) throws JsonReferenceException, IOException, JsonPointerException {
+        JsonNode ref = node.get("$ref");
+        if (! ref.isTextual()) {
+            throw new JsonReferenceException("$ref not textual for node=" + node);
+        }
+        String refString = ref.textValue();
+
+        JsonReference jsonReference = new JsonReference(refString);
+        JsonNode replacement = jsonReference.resolve();
+        return replacement;
     }
 
     private JsonNode getReferencedJsonNode() throws IOException {
