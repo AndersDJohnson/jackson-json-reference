@@ -1,6 +1,7 @@
 import com.fasterxml.jackson.databind.*;
 import com.github.fge.jackson.jsonpointer.*;
 import me.andrz.jackson.*;
+import org.apache.commons.collections4.*;
 import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.server.handler.*;
 import org.junit.*;
@@ -95,6 +96,17 @@ public class JsonReferenceTest {
         String json = mapper.writeValueAsString(jsonNode);
 
         assertThat(json, equalTo("3"));
+    }
+
+    @Test
+    public void testProcess() throws IOException {
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode node = mapper.readTree(new File("src/test/resources/nest.json"));
+        JsonReference.process(node);
+
+        String json = mapper.writeValueAsString(node);
+        System.out.println("json: " + json);
     }
 
     @Test
