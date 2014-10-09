@@ -1,8 +1,9 @@
 import com.fasterxml.jackson.databind.*;
 import com.github.fge.jackson.jsonpointer.*;
 import me.andrz.jackson.*;
-import org.apache.commons.collections4.*;
+import org.apache.logging.log4j.*;
 import org.eclipse.jetty.server.*;
+import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.handler.*;
 import org.junit.*;
 
@@ -15,6 +16,8 @@ import static org.junit.Assert.*;
  * Created by Anders on 10/7/2014.
  */
 public class JsonReferenceTest {
+
+    private static final Logger logger = LogManager.getLogger(JsonReferenceTest.class);
 
     static Server server;
 
@@ -110,7 +113,7 @@ public class JsonReferenceTest {
         JsonReference.process(context);
 
         String json = mapper.writeValueAsString(node);
-        System.out.println("json: " + json);
+        logger.debug("json: " + json);
     }
 
     @Test
