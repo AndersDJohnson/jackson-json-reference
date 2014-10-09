@@ -117,6 +117,20 @@ public class JsonReferenceTest {
     }
 
     @Test
+    public void testProcessFromFile() throws IOException, JsonReferenceException, JsonPointerException {
+
+        File file = new File("src/test/resources/nest.json");
+
+        JsonContext context = JsonContext.fromFile(file);
+        JsonReference.process(context);
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode node = context.getNode();
+        String json = mapper.writeValueAsString(node);
+        logger.debug("json: " + json);
+    }
+
+    @Test
     public void testResolveRootJson() throws IOException, JsonPointerException {
 
         String jsonString = "{\"a\": 3}";
