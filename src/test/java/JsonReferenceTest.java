@@ -103,7 +103,11 @@ public class JsonReferenceTest {
 
         ObjectMapper mapper = new ObjectMapper();
         JsonNode node = mapper.readTree(new File("src/test/resources/nest.json"));
-        JsonReference.process(node);
+
+        JsonContext context = new JsonContext();
+        context.setNode(node);
+        context.setPath("src/test/resources");
+        JsonReference.process(context);
 
         String json = mapper.writeValueAsString(node);
         System.out.println("json: " + json);
@@ -115,8 +119,7 @@ public class JsonReferenceTest {
         String jsonString = "{\"a\": 3}";
         String ref = "#/a";
 
-        JsonReference jsonReference = new JsonReference(ref);
-        jsonReference.setRootJsonNode(jsonString);
+        JsonReference jsonReference = new JsonReference(ref, jsonString);
 
         JsonNode jsonNode = jsonReference.resolve();
 
