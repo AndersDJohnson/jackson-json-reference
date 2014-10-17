@@ -8,6 +8,7 @@ import org.eclipse.jetty.server.handler.*;
 import org.junit.*;
 
 import java.io.*;
+import java.net.URL;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
@@ -117,17 +118,30 @@ public class JsonReferenceTest {
     }
 
     @Test
-    public void testProcessFromFile() throws IOException, JsonReferenceException, JsonPointerException {
+    public void testProcessFile() throws IOException, JsonReferenceException, JsonPointerException {
 
         File file = new File("src/test/resources/nest.json");
 
-        JsonContext context = JsonContext.fromFile(file);
-        JsonReference.process(context);
+        JsonContext context = JsonReference.process(file);
 
         ObjectMapper mapper = new ObjectMapper();
         JsonNode node = context.getNode();
         String json = mapper.writeValueAsString(node);
         logger.debug("json: " + json);
+    }
+
+    @Test
+    public void testProcessURL() throws IOException, JsonReferenceException, JsonPointerException {
+
+        URL url = new URL("http://localhost:8080/ref.json");
+
+        JsonContext context = JsonReference.process(url);
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode node = context.getNode();
+        String json = mapper.writeValueAsString(node);
+        logger.debug("json: " + json);
+        assertThat(json, equalTo("{\"q\":{\"a\":3}}"));
     }
 
     @Test

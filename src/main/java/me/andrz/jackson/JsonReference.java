@@ -57,12 +57,23 @@ public class JsonReference {
         this.fragment = fragment;
     }
 
-    public static void process(JsonContext context) throws JsonReferenceException, IOException, JsonPointerException {
-        JsonNode node = context.getNode();
-        process(context, node);
+    public static JsonContext process(File file) throws JsonReferenceException, IOException, JsonPointerException {
+        JsonContext context = new JsonContext(file);
+        return process(context);
     }
 
-    public static void process(JsonContext context, JsonNode node) throws JsonReferenceException, IOException, JsonPointerException {
+    public static JsonContext process(URL url) throws JsonReferenceException, IOException, JsonPointerException {
+        JsonContext context = new JsonContext(url);
+        return process(context);
+    }
+
+    public static JsonContext process(JsonContext context) throws JsonReferenceException, IOException, JsonPointerException {
+        JsonNode node = context.getNode();
+        process(context, node);
+        return context;
+    }
+
+    public static JsonContext process(JsonContext context, JsonNode node) throws JsonReferenceException, IOException, JsonPointerException {
 
         if (node.isArray()) {
             ArrayNode arrayNode = (ArrayNode) node;
@@ -79,7 +90,7 @@ public class JsonReference {
                     ++i;
                 }
                 else {
-                    process(context, subNode);
+                    return process(context, subNode);
                 }
             }
         }
@@ -101,11 +112,12 @@ public class JsonReference {
                     objectNode.set(key, replacement);
                 }
                 else {
-                    process(context, subNode);
+                    return process(context, subNode);
                 }
             }
         }
 
+        return null;
     }
 
     private static JsonNode resolveForRefNode(JsonNode node, JsonContext finalContext) throws JsonReferenceException, IOException, JsonPointerException {
@@ -145,14 +157,23 @@ public class JsonReference {
         JsonNode referencedJsonNode;
 
         if (uri != null && ! "".equals(uri)) {
-            if (isUriUrl()) {
-                URL url = new URL(uri);
+            if (isUrl(relativeTo)) {
+                URL relativeToURL = new URL(relativeTo);
+                URL url = new URL(relativeToURL, uri);
+
                 referencedJsonNode = mapper.readTree(url);
-            } else {
+            }
+            else if (isUrl(uri)) {
+                URL url = new URL(uri);
+
+                referencedJsonNode = mapper.readTree(url);
+            }
+            else {
                 String relUri;
                 if (relativeTo == null) {
                     relUri = uri;
-                } else {
+                }
+                else {
                     relUri = relativeTo + "/" + uri;
                 }
                 File file = new File(relUri);
@@ -166,8 +187,8 @@ public class JsonReference {
         return referencedJsonNode;
     }
 
-    public boolean isUriUrl() {
-        return uri.matches("^https?://.*");
+    public static boolean isUrl(String string) {
+        return string != null && string.matches("^https?://.*");
     }
 
 
