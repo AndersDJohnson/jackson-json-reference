@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 
 /**
  *
@@ -40,17 +41,28 @@ public class JsonContext {
      * @return
      * @throws IOException
      */
-    public static JsonContext fromFile(File file) throws IOException {
-        JsonContext context = new JsonContext();
+    public JsonContext(File file) throws IOException {
 
         ObjectMapper mapper = new ObjectMapper();
         JsonNode node = mapper.readTree(file);
-        context.setNode(node);
+        this.node = node;
 
         String parent = file.getParent();
-        context.setPath(parent);
+        this.path = parent;
+    }
 
-        return context;
+    /**
+     *
+     * @param url
+     * @return
+     * @throws IOException
+     */
+    public JsonContext(URL url) throws IOException {
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode node = mapper.readTree(url);
+        this.node = node;
+        this.path = url.toString();
     }
 
     public JsonNode getNode() {
