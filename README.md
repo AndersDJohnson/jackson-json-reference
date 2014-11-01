@@ -6,13 +6,22 @@ Based on specs:
  * [JavaScript Object Notation (JSON) Pointer](http://tools.ietf.org/html/rfc6901)
 
 
+# Usage
+
+## File
 ```java
 File file = new File("src/test/resources/nest.json");
+JsonNode node = JsonReference.process(file);
+```
 
-JsonContext context = JsonContext.fromFile(file);
-JsonReference.process(context);
-JsonNode node = context.getNode();
+## URL
+```java
+URL url = new URL("src/test/resources/nest.json");
+JsonNode node = JsonReference.process(url);
+```
 
+## Output
+```java
 ObjectMapper mapper = new ObjectMapper();
 mapper.writeValue(new File("out.json"), node);
 ```
