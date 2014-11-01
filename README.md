@@ -16,7 +16,7 @@ JsonNode node = (new JsonReference()).process(file);
 
 ## URL
 ```java
-URL url = new URL("src/test/resources/nest.json");
+URL url = new URL("http://json-schema.org/schema");
 JsonNode node = (new JsonReference()).process(url);
 ```
 
