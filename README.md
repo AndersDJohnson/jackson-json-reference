@@ -11,13 +11,24 @@ Based on specs:
 ## File
 ```java
 File file = new File("src/test/resources/nest.json");
-JsonNode node = JsonReference.process(file);
+JsonNode node = (new JsonReference()).process(file);
 ```
 
 ## URL
 ```java
 URL url = new URL("src/test/resources/nest.json");
-JsonNode node = JsonReference.process(url);
+JsonNode node = (new JsonReference()).process(url);
+```
+
+## Settings
+```java
+ObjectMapper mapper = new ObjectMapper();
+
+JsonReference ref = new JsonReference(mapper);
+ref.setStopOnCircular(false); // default true
+ref.setMaxDepth(2); // default 1
+
+JsonNode node = ref.process( /*...*/ );
 ```
 
 ## Output

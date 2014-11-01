@@ -1,4 +1,6 @@
 target
 
+out.json
+
 *.iml
 .idea
