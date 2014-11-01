@@ -1,3 +1,4 @@
+import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.*;
 import com.github.fge.jackson.jsonpointer.*;
 import me.andrz.jackson.*;
@@ -119,6 +120,18 @@ public class JsonReferenceTest {
         ref.setStopOnCircular(false);
         ref.setMaxDepth(2);
         JsonNode node = ref.process(file);
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+        mapper.writeValue(new File("out.json"), node);
+    }
+
+    @Test
+    public void testProcessURLRemote() throws IOException, JsonReferenceException, JsonPointerException {
+
+        URL url = new URL("http://json-schema.org/schema");
+
+        JsonNode node = (new JsonReference()).process(url);
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
