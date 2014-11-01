@@ -8,7 +8,6 @@ import org.apache.logging.log4j.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;
-import java.util.regex.*;
 
 /**
  *
@@ -17,63 +16,29 @@ public class JsonReference {
 
     private static final Logger logger = LogManager.getLogger(JsonReference.class);
 
-    public static final Pattern pattern = Pattern.compile("([^\\#]*)(\\#(.*))?");
+    private static final ObjectMapper mapper = new ObjectMapper();
 
-    private ObjectMapper mapper = new ObjectMapper();
-
-
-    private String uri;
-    private String fragment;
-    private JsonNode contextNode;
-    private String relativeTo;
-
-    public JsonReference (String ref) {
-        this.parseReference(ref);
-    }
-
-    public JsonReference (String ref, JsonNode contextNode) {
-        this.contextNode = contextNode;
-        this.parseReference(ref);
-    }
-
-    public JsonReference (String ref, String contextNodeString) throws IOException {
-        JsonNode contextNode = mapper.readTree(contextNodeString);
-        this.contextNode = contextNode;
-        this.parseReference(ref);
-    }
-
-    public void parseReference(String ref) {
-        String uri;
-        String fragment = null;
-
-        Matcher matcher = pattern.matcher(ref);
-        matcher.find();
-        uri = matcher.group(1);
-        int groupCount = matcher.groupCount();
-        if (groupCount > 2) {
-            fragment = matcher.group(3);
-        }
-        this.uri = uri;
-        this.fragment = fragment;
-    }
-
-    public static JsonContext process(File file) throws JsonReferenceException, IOException, JsonPointerException {
+    public static JsonNode process(File file) throws JsonReferenceException, IOException, JsonPointerException {
         JsonContext context = new JsonContext(file);
-        return process(context);
+        process(context);
+        return context.getNode();
     }
 
-    public static JsonContext process(URL url) throws JsonReferenceException, IOException, JsonPointerException {
+    public static JsonNode process(URL url) throws JsonReferenceException, IOException, JsonPointerException {
         JsonContext context = new JsonContext(url);
-        return process(context);
+        process(context);
+        return context.getNode();
     }
 
-    public static JsonContext process(JsonContext context) throws JsonReferenceException, IOException, JsonPointerException {
+    public static JsonNode process(JsonContext context) throws JsonReferenceException, IOException, JsonPointerException {
         JsonNode node = context.getNode();
         process(context, node);
-        return context;
+        return context.getNode();
     }
 
-    public static JsonContext process(JsonContext context, JsonNode node) throws JsonReferenceException, IOException, JsonPointerException {
+    public static void process(JsonContext context, JsonNode node) throws JsonReferenceException, IOException, JsonPointerException {
+
+        int depth = 100;
 
         if (node.isArray()) {
             ArrayNode arrayNode = (ArrayNode) node;
@@ -82,15 +47,18 @@ public class JsonReference {
             while (elements.hasNext()) {
                 JsonNode subNode = elements.next();
 
-                if (subNode.has("$ref")) {
-                    JsonNode replacement = resolveForRefNode(subNode, context);
+                if (JsonRefNode.is(subNode)) {
+                    JsonRef ref = getJsonRefForJsonNode(subNode);
+                    JsonContext referencedContext = resolveFromContextToContext(ref, context);
 
-                    logger.debug("replacing " + subNode + " with " + replacement);
-                    arrayNode.set(i, replacement);
+                    JsonNode replacementNode = referencedContext.getNode();
+
+                    logger.debug("replacing " + subNode + " with " + replacementNode);
+                    arrayNode.set(i, replacementNode);
                     ++i;
                 }
                 else {
-                    return process(context, subNode);
+                    process(context, subNode);
                 }
             }
         }
@@ -105,126 +73,114 @@ public class JsonReference {
 
                 logger.debug("key=" + key);
 
-                if (subNode.has("$ref")) {
-                    JsonNode replacement = resolveForRefNode(subNode, context);
+                if (JsonRefNode.is(subNode)) {
+                    JsonRef ref = getJsonRefForJsonNode(subNode);
+                    JsonContext referencedContext = resolveFromContextToContext(ref, context);
 
-                    logger.debug("replacing " + subNode + " with " + replacement);
-                    objectNode.set(key, replacement);
+                    if (depth > 0) {
+                        process(referencedContext);
+                    }
+
+                    JsonNode replacementNode = referencedContext.getNode();
+
+                    logger.debug("replacing " + subNode + " with " + replacementNode);
+                    objectNode.set(key, replacementNode);
                 }
                 else {
-                    return process(context, subNode);
+                    process(context, subNode);
                 }
             }
         }
-
-        return null;
     }
 
-    private static JsonNode resolveForRefNode(JsonNode node, JsonContext finalContext) throws JsonReferenceException, IOException, JsonPointerException {
-        JsonNode ref = node.get("$ref");
-        if (! ref.isTextual()) {
-            throw new JsonReferenceException("$ref not textual for node=" + node);
-        }
-        String refString = ref.textValue();
-
-        JsonReference jsonReference = new JsonReference(refString);
-        jsonReference.setRelativeTo(finalContext.getPath());
-        JsonNode replacement = jsonReference.resolve();
-
-        String path = jsonReference.getUri();
-        String parentPath = finalContext.getPath();
-        File refFile = new File(parentPath, path);
-        String refParent = refFile.getParent();
-
-        JsonContext replacementContext = new JsonContext(replacement, refParent);
-        // recursive process
-        process(replacementContext, replacement);
-
-        return replacement;
+    public static JsonRef getJsonRefForJsonNode(JsonNode node) throws JsonReferenceException {
+        JsonRefNode refNode = new JsonRefNode(node);
+        String refString = refNode.getRefString();
+        JsonRef ref = new JsonRef(refString);
+        return ref;
     }
 
-    public JsonNode resolve() throws IOException, JsonPointerException {
-        JsonNode referencedJsonNode = getReferencedJsonNode();
+    public static JsonContext resolveFromContextToContext(JsonRef ref, JsonContext context) throws IOException, JsonPointerException {
 
-        JsonPointer jsonPointer = new JsonPointer(fragment);
-        JsonNode refJsonNode = jsonPointer.get(referencedJsonNode);
+        JsonContext referencedContext;
+        JsonNode referencedNode;
 
-        return refJsonNode;
-    }
+        URL absoluteReferencedUrl;
+        String refUri = ref.getUri();
 
-    private JsonNode getReferencedJsonNode() throws IOException {
+        logger.debug("dereferencing " + ref);
 
-        JsonNode referencedJsonNode;
-
-        if (uri != null && ! "".equals(uri)) {
-            if (isUrl(relativeTo)) {
-                URL relativeToURL = new URL(relativeTo);
-                URL url = new URL(relativeToURL, uri);
-
-                referencedJsonNode = mapper.readTree(url);
-            }
-            else if (isUrl(uri)) {
-                URL url = new URL(uri);
-
-                referencedJsonNode = mapper.readTree(url);
-            }
-            else {
-                String relUri;
-                if (relativeTo == null) {
-                    relUri = uri;
-                }
-                else {
-                    relUri = relativeTo + "/" + uri;
-                }
-                File file = new File(relUri);
-                referencedJsonNode = mapper.readTree(file);
-            }
+        if (ref.isForAbsoluteUrl()) {
+            absoluteReferencedUrl = new URL(refUri);
         }
         else {
-            referencedJsonNode = contextNode;
+            URL contextUrl = context.getUrl();
+            absoluteReferencedUrl = new URL(contextUrl, refUri);
         }
 
-        return referencedJsonNode;
+        referencedNode = from(absoluteReferencedUrl).get(ref);
+
+        referencedContext = new JsonContext();
+        referencedContext.setUrl(absoluteReferencedUrl);
+        referencedContext.setNode(referencedNode);
+
+        referencedContext.setUrl(absoluteReferencedUrl);
+
+        return referencedContext;
     }
 
-    public static boolean isUrl(String string) {
-        return string != null && string.matches("^https?://.*");
+    public static JsonNode resolveFromContextToNode(JsonRef ref, JsonContext context) throws IOException, JsonPointerException {
+
+        JsonContext toContext = resolveFromContextToContext(ref, context);
+        JsonNode referencedNode;
+
+        referencedNode = toContext.getNode();
+
+        return referencedNode;
     }
 
+    /**
+     * Resolve with defaults.
+     * - Assumes ref points to absolute URL.
+     *
+     * @param ref
+     * @return
+     * @throws IOException
+     * @throws JsonPointerException
+     */
+    public static JsonNode get(JsonRef ref) throws IOException, JsonPointerException {
+        JsonNode referencedNode;
 
-    public String getUri() {
-        return uri;
+        String refUri = ref.getUri();
+
+        URL url = new URL(refUri);
+
+        referencedNode = from(url).get(ref);
+
+        return referencedNode;
     }
 
-    public void setUri(String uri) {
-        this.uri = uri;
+    public static ReferringJsonNode from(URL url) throws IOException {
+        JsonNode node = mapper.readTree(url);
+        return from(node);
     }
 
-    public String getFragment() {
-        return fragment;
+    public static ReferringJsonNode from(File file) throws IOException {
+        return fromFile(file);
     }
 
-    public void setFragment(String fragment) {
-        this.fragment = fragment;
+    public static ReferringJsonNode from(JsonNode node) {
+        return new ReferringJsonNode(node);
     }
 
-    public JsonNode getContextNode() {
-        return contextNode;
+    public static ReferringJsonNode fromFile(File file) throws IOException {
+        JsonNode node = mapper.readTree(file);
+        return from(node);
     }
 
-    public void setContextNode(JsonNode contextNode) {
-        this.contextNode = contextNode;
+    public static ReferringJsonNode fromFile(String fileString) throws IOException {
+        File file = new File(fileString);
+        return fromFile(file);
     }
 
-    public String getRelativeTo() {
-        return relativeTo;
-    }
-
-    public void setRelativeTo(String relativeTo) {
-        this.relativeTo = relativeTo;
-    }
-
-    public void setRelativeToPath(File relativeToPath) {
-        this.relativeTo = relativeToPath.getAbsolutePath();
-    }
 }

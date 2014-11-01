@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
@@ -12,12 +13,12 @@ import java.net.URL;
 public class JsonContext {
 
     JsonNode node;
-    String path;
+    URL url;
 
     public JsonContext() {}
 
     /**
-     * No path context, may not be able to resolve file-relative references.
+     * No path context, may not be able to get file-relative references.
      *
      * @param node
      */
@@ -27,28 +28,18 @@ public class JsonContext {
 
     /**
      *
-     * @param node
-     * @param path
-     */
-    public JsonContext(JsonNode node, String path) {
-        this.node = node;
-        this.path = path;
-    }
-
-    /**
-     *
      * @param file
      * @return
      * @throws IOException
      */
     public JsonContext(File file) throws IOException {
-
         ObjectMapper mapper = new ObjectMapper();
         JsonNode node = mapper.readTree(file);
         this.node = node;
 
-        String parent = file.getParent();
-        this.path = parent;
+        File parent = file.getParentFile();
+        URL url = parent.toURI().toURL();
+        this.url = url;
     }
 
     /**
@@ -58,11 +49,10 @@ public class JsonContext {
      * @throws IOException
      */
     public JsonContext(URL url) throws IOException {
-
         ObjectMapper mapper = new ObjectMapper();
         JsonNode node = mapper.readTree(url);
         this.node = node;
-        this.path = url.toString();
+        this.url = url;
     }
 
     public JsonNode getNode() {
@@ -73,12 +63,11 @@ public class JsonContext {
         this.node = node;
     }
 
-    public String getPath() {
-        return path;
+    public URL getUrl() {
+        return url;
     }
 
-    public void setPath(String path) {
-        this.path = path;
+    public void setUrl(URL url) {
+        this.url = url;
     }
-
 }

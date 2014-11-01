@@ -1,0 +1,6 @@
+{
+  "local": "ok",
+  "remote": {
+    "$ref": "http://json-schema.org/schema"
+  }
+}

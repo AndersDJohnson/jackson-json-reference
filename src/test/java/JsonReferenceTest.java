@@ -22,6 +22,8 @@ public class JsonReferenceTest {
 
     static Server server;
 
+    private static final ObjectMapper mapper = new ObjectMapper();
+
     @BeforeClass
     public static void beforeClass() throws Exception {
         server = new Server(8080);
@@ -47,23 +49,23 @@ public class JsonReferenceTest {
     public void testConstruct() throws IOException, JsonPointerException {
 
         String uri = "http://localhost:8080";
-        String fragment = "/a";
-        String ref = uri + "#" + fragment;
+        String pointer = "/a";
+        String refString = uri + "#" + pointer;
 
-        JsonReference jsonReference = new JsonReference(ref);
+        JsonRef ref = new JsonRef(refString);
 
-        assertThat(jsonReference.getUri(), equalTo(uri));
-        assertThat(jsonReference.getFragment(), equalTo(fragment));
+        assertThat(ref.getUri(), equalTo(uri));
+        assertThat(ref.getPointer(), equalTo(pointer));
     }
 
     @Test
-    public void testResolveURL() throws IOException, JsonPointerException {
+    public void testGet() throws IOException, JsonPointerException {
 
-        String ref = "http://localhost:8080/a.json#/a";
+        String refString = "http://localhost:8080/a.json#/a";
 
-        JsonReference jsonReference = new JsonReference(ref);
+        JsonRef ref = new JsonRef(refString);
 
-        JsonNode jsonNode = jsonReference.resolve();
+        JsonNode jsonNode = JsonReference.get(ref);
 
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(jsonNode);
@@ -72,49 +74,16 @@ public class JsonReferenceTest {
     }
 
     @Test
-    public void testResolveFile() throws IOException, JsonPointerException {
+    public void testGetFromFile() throws IOException, JsonPointerException {
 
-        String ref = "src/test/resources/a.json#/a";
+        File file = new File("src/test/resources/a.json");
 
-        JsonReference jsonReference = new JsonReference(ref);
-
-        JsonNode jsonNode = jsonReference.resolve();
+        JsonNode jsonNode = JsonReference.from(file).get("/a");
 
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(jsonNode);
 
         assertThat(json, equalTo("3"));
-    }
-
-    @Test
-    public void testResolveFileRelativeTo() throws IOException, JsonPointerException {
-
-        String ref = "resources/a.json#/a";
-
-        JsonReference jsonReference = new JsonReference(ref);
-        jsonReference.setRelativeTo("src/test");
-
-        JsonNode jsonNode = jsonReference.resolve();
-
-        ObjectMapper mapper = new ObjectMapper();
-        String json = mapper.writeValueAsString(jsonNode);
-
-        assertThat(json, equalTo("3"));
-    }
-
-    @Test
-    public void testProcess() throws IOException, JsonReferenceException, JsonPointerException {
-
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode node = mapper.readTree(new File("src/test/resources/nest.json"));
-
-        JsonContext context = new JsonContext();
-        context.setNode(node);
-        context.setPath("src/test/resources");
-        JsonReference.process(context);
-
-        String json = mapper.writeValueAsString(node);
-        logger.debug("json: " + json);
     }
 
     @Test
@@ -122,10 +91,21 @@ public class JsonReferenceTest {
 
         File file = new File("src/test/resources/nest.json");
 
-        JsonContext context = JsonReference.process(file);
+        JsonNode node = JsonReference.process(file);
 
         ObjectMapper mapper = new ObjectMapper();
-        JsonNode node = context.getNode();
+        String json = mapper.writeValueAsString(node);
+        logger.debug("json: " + json);
+    }
+
+    @Test
+    public void testProcessFileWithRemote() throws IOException, JsonReferenceException, JsonPointerException {
+
+        File file = new File("src/test/resources/remote.json");
+
+        JsonNode node = JsonReference.process(file);
+
+        ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(node);
         logger.debug("json: " + json);
     }
@@ -135,27 +115,27 @@ public class JsonReferenceTest {
 
         URL url = new URL("http://localhost:8080/ref.json");
 
-        JsonContext context = JsonReference.process(url);
+        JsonNode node = JsonReference.process(url);
 
         ObjectMapper mapper = new ObjectMapper();
-        JsonNode node = context.getNode();
         String json = mapper.writeValueAsString(node);
         logger.debug("json: " + json);
         assertThat(json, equalTo("{\"q\":{\"a\":3}}"));
     }
 
     @Test
-    public void testResolveRootJson() throws IOException, JsonPointerException {
+    public void testGetFromJsonNode() throws IOException, JsonPointerException {
 
         String jsonString = "{\"a\": 3}";
-        String ref = "#/a";
+        JsonNode fromNode = mapper.readTree(jsonString);
 
-        JsonReference jsonReference = new JsonReference(ref, jsonString);
+        String refString = "#/a";
+        JsonRef ref = new JsonRef(refString);
 
-        JsonNode jsonNode = jsonReference.resolve();
+        JsonNode toNode = JsonReference.from(fromNode).get(ref);
 
         ObjectMapper mapper = new ObjectMapper();
-        String json = mapper.writeValueAsString(jsonNode);
+        String json = mapper.writeValueAsString(toNode);
 
         assertThat(json, equalTo("3"));
     }
