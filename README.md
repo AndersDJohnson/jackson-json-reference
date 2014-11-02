@@ -43,3 +43,7 @@ JsonNode node = ref.process( /*...*/ );
 ObjectMapper mapper = new ObjectMapper();
 mapper.writeValue(new File("out.json"), node);
 ```
+
+# License
+
+See `LICENSE`.
