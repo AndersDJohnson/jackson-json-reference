@@ -153,10 +153,12 @@ public class JsonReferenceProcessor {
         }
     }
 
-    public JsonNode getReplacementNode(JsonNode subNode, JsonContext context, Set<JsonReference> processed) throws JsonReferenceException, IOException {
+    public JsonNode getReplacementNode(JsonNode node, JsonContext context, Set<JsonReference> processed) throws JsonReferenceException, IOException {
 
-        JsonReference ref = getJsonRefForJsonNode(subNode);
+        JsonRefNode refNode = JsonRefNode.fromNode(node);
+        JsonReference ref = refNode.getJsonReference();
         JsonReference absRef = getAbsoluteRef(ref, context);
+
         if (stopOnCircular && processed.contains(absRef)) {
             logger.debug("skipping on ref: " + absRef);
             return null;
@@ -168,7 +170,6 @@ public class JsonReferenceProcessor {
 
         // recurse
         process(referencedContext, processed);
-
         // after recursing, remove ref from processed set for next iteration
         processed.remove(absRef);
 
@@ -182,13 +183,6 @@ public class JsonReferenceProcessor {
         String newRefString = context.getUrl() + "#" + ref.getPointer().toString();
         JsonReference newRef = JsonReference.fromString(newRefString);
         return newRef;
-    }
-
-    public JsonReference getJsonRefForJsonNode(JsonNode node) throws JsonReferenceException {
-        JsonRefNode refNode = new JsonRefNode(node);
-        String refString = refNode.getRefString();
-        JsonReference ref = JsonReference.fromString(refString);
-        return ref;
     }
 
     public JsonContext resolveFromContextToContext(JsonReference ref, JsonContext context) throws IOException, JsonReferenceException {
