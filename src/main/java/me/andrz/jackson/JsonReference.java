@@ -17,7 +17,7 @@ public class JsonReference {
 
     public JsonReference() {}
 
-    public JsonReference(URI uri) {
+    private JsonReference(URI uri) {
 
         String fragment = uri.getFragment();
 
