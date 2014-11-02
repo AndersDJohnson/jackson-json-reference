@@ -4,11 +4,10 @@ import com.fasterxml.jackson.databind.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
- *
+ * Represents a JSON node and its location (URL, file, etc).
  */
 public class JsonContext {
 
@@ -16,15 +15,6 @@ public class JsonContext {
     URL url;
 
     public JsonContext() {}
-
-    /**
-     * No path context, may not be able to get file-relative references.
-     *
-     * @param node
-     */
-    public JsonContext(JsonNode node) {
-        this.node = node;
-    }
 
     /**
      *

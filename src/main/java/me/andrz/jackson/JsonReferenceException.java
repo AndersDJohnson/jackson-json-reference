@@ -1,7 +1,7 @@
 package me.andrz.jackson;
 
 /**
- *
+ * Generic exception for the package.
  */
 public class JsonReferenceException extends Exception {
 

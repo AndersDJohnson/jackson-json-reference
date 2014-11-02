@@ -239,25 +239,25 @@ public class JsonReference {
         return referencedNode;
     }
 
-    public ReferringJsonNode from(URL url) throws IOException {
+    public RefResolvingJsonNode from(URL url) throws IOException {
         JsonNode node = mapper.readTree(url);
         return from(node);
     }
 
-    public ReferringJsonNode from(File file) throws IOException {
+    public RefResolvingJsonNode from(File file) throws IOException {
         return fromFile(file);
     }
 
-    public ReferringJsonNode from(JsonNode node) {
-        return new ReferringJsonNode(node);
+    public RefResolvingJsonNode from(JsonNode node) {
+        return new RefResolvingJsonNode(node);
     }
 
-    public ReferringJsonNode fromFile(File file) throws IOException {
+    public RefResolvingJsonNode fromFile(File file) throws IOException {
         JsonNode node = mapper.readTree(file);
         return from(node);
     }
 
-    public ReferringJsonNode fromFile(String fileString) throws IOException {
+    public RefResolvingJsonNode fromFile(String fileString) throws IOException {
         File file = new File(fileString);
         return fromFile(file);
     }
