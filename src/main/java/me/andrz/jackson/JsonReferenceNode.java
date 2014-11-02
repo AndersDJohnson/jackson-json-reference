@@ -5,24 +5,24 @@ import com.fasterxml.jackson.databind.JsonNode;
 /**
  * Represent a JSON Reference object node (one with a '$ref' key).
  */
-public class JsonRefNode {
+public class JsonReferenceNode {
 
     private JsonNode jsonNode;
     private JsonReference jsonReference;
 
-    private JsonRefNode(JsonNode jsonNode) {
+    private JsonReferenceNode(JsonNode jsonNode) {
         this.jsonNode = jsonNode;
     }
 
-    public static JsonRefNode fromNode(JsonNode jsonNode) throws JsonReferenceException {
-        JsonRefNode jsonRefNode = new JsonRefNode(jsonNode);
+    public static JsonReferenceNode fromNode(JsonNode jsonNode) throws JsonReferenceException {
+        JsonReferenceNode jsonReferenceNode = new JsonReferenceNode(jsonNode);
 
         String refString = getRefString(jsonNode);
         JsonReference jsonReference = JsonReference.fromString(refString);
 
-        jsonRefNode.jsonReference = jsonReference;
+        jsonReferenceNode.jsonReference = jsonReference;
 
-        return jsonRefNode;
+        return jsonReferenceNode;
     }
 
     protected static String getRefString(JsonNode jsonNode) throws JsonReferenceException {
