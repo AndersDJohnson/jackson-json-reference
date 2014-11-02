@@ -113,7 +113,7 @@ public class JsonReferenceProcessor {
 
                 logger.debug("i=" + i);
 
-                if (JsonRefNode.is(subNode)) {
+                if (JsonReferenceNode.is(subNode)) {
 
                     JsonNode replacementNode = getReplacementNode(subNode, context, processed);
                     if (replacementNode == null) continue;
@@ -138,7 +138,7 @@ public class JsonReferenceProcessor {
 
                 logger.debug("key=" + key);
 
-                if (JsonRefNode.is(subNode)) {
+                if (JsonReferenceNode.is(subNode)) {
 
                     JsonNode replacementNode = getReplacementNode(subNode, context, processed);
                     if (replacementNode == null) continue;
@@ -155,7 +155,7 @@ public class JsonReferenceProcessor {
 
     public JsonNode getReplacementNode(JsonNode node, JsonContext context, Set<JsonReference> processed) throws JsonReferenceException, IOException {
 
-        JsonRefNode refNode = JsonRefNode.fromNode(node);
+        JsonReferenceNode refNode = JsonReferenceNode.fromNode(node);
         JsonReference ref = refNode.getJsonReference();
         JsonReference absRef = getAbsoluteRef(ref, context);
 
