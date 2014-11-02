@@ -11,6 +11,7 @@ import java.io.*;
 import java.net.URL;
 
 import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.*;
 
 /**
@@ -20,9 +21,15 @@ public class JsonReferenceTest {
 
     private static final Logger logger = LogManager.getLogger(JsonReferenceTest.class);
 
-    static Server server;
+    private static Server server;
 
     private static final ObjectMapper mapper = new ObjectMapper();
+
+    private static final String JSON_SCHEMA_URL = "http://json-schema.org/schema";
+    /**
+     * Length in bytes of JSON at [@link JSON_SCHEMA_URL}.
+     */
+    private static final long JSON_SCHEMA_LENGTH = 1024L * 2; // 2 KB
 
     @BeforeClass
     public static void beforeClass() throws Exception {
@@ -77,12 +84,14 @@ public class JsonReferenceTest {
     public void testProcessFile() throws IOException, JsonReferenceException {
 
         File file = new File("src/test/resources/nest.json");
+        String expected = "{\"a\":3,\"b\":4,\"c\":{\"q\":{\"$ref\":\"a.json#\"}},\"nest\":[{\"ok\":\"yes\",\"why\":{\"b\":4}},\"a\"]}";
 
         JsonNode node = (new JsonReference()).process(file);
 
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(node);
-        logger.debug("json: " + json);
+
+        assertThat(json, equalTo(expected));
     }
 
     @Test
@@ -93,8 +102,14 @@ public class JsonReferenceTest {
         JsonNode node = (new JsonReference()).process(file);
 
         ObjectMapper mapper = new ObjectMapper();
-        mapper.enable(SerializationFeature.INDENT_OUTPUT);
-        mapper.writeValue(new File("out.json"), node);
+
+        File outFile = new File("out.json");
+        mapper.writeValue(outFile, node);
+
+        // expecting the output to be of a certain length
+        long fileLength = file.length();
+        assertThat(outFile.length(), greaterThan(fileLength));
+        assertThat(outFile.length(), greaterThan(JSON_SCHEMA_LENGTH));
     }
 
     @Test
@@ -108,20 +123,30 @@ public class JsonReferenceTest {
         JsonNode node = ref.process(file);
 
         ObjectMapper mapper = new ObjectMapper();
-        mapper.enable(SerializationFeature.INDENT_OUTPUT);
-        mapper.writeValue(new File("out.json"), node);
+
+        File outFile = new File("out.json");
+        mapper.writeValue(outFile, node);
+
+        // expecting the output to be of a certain length
+        long fileLength = file.length();
+        assertThat(outFile.length(), greaterThan(fileLength));
+        assertThat(outFile.length(), greaterThan(JSON_SCHEMA_LENGTH));
     }
 
     @Test
     public void testProcessURLRemote() throws IOException, JsonReferenceException {
 
-        URL url = new URL("http://json-schema.org/schema");
+        URL url = new URL(JSON_SCHEMA_URL);
 
         JsonNode node = (new JsonReference()).process(url);
 
         ObjectMapper mapper = new ObjectMapper();
-        mapper.enable(SerializationFeature.INDENT_OUTPUT);
-        mapper.writeValue(new File("out.json"), node);
+
+        File outFile = new File("out.json");
+        mapper.writeValue(outFile, node);
+
+        // expecting the output to be of a certain length
+        assertThat(outFile.length(), greaterThan(JSON_SCHEMA_LENGTH));
     }
 
     @Test
@@ -133,7 +158,6 @@ public class JsonReferenceTest {
 
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(node);
-        logger.debug("json: " + json);
         assertThat(json, equalTo("{\"q\":{\"a\":3}}"));
     }
 
