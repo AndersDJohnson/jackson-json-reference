@@ -1,9 +1,15 @@
 jackson-json-reference
 ==============
 
-Based on specs:
- * [JSON Reference](http://tools.ietf.org/html/draft-pbryan-zyp-json-ref-03)
- * [JavaScript Object Notation (JSON) Pointer](http://tools.ietf.org/html/rfc6901)
+JSON Reference implementation. Process references in JSON documents. Aims for but not limited to full spec compliance.
+
+* Supports URLs & files, with relative & absolute URLs.
+* Recursive expansion, with options for max depth and stop on circularity.
+
+Specs:
+
+* [JSON Reference](http://tools.ietf.org/html/draft-pbryan-zyp-json-ref-03)
+* [JSON Pointer](http://tools.ietf.org/html/rfc6901)
 
 
 # Usage
