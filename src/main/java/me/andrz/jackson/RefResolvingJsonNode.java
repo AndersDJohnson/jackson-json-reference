@@ -5,13 +5,13 @@ import com.github.fge.jackson.jsonpointer.JsonPointer;
 import com.github.fge.jackson.jsonpointer.JsonPointerException;
 
 /**
- * Created by Anders on 11/1/2014.
+ * Wraps a JSON node with ability to resolve JSON references.
  */
-public class ReferringJsonNode {
+public class RefResolvingJsonNode {
 
     private JsonNode node;
 
-    public ReferringJsonNode(JsonNode node) {
+    public RefResolvingJsonNode(JsonNode node) {
         this.node = node;
     }
 
