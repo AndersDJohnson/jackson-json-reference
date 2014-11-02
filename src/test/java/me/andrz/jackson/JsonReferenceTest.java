@@ -53,34 +53,6 @@ public class JsonReferenceTest {
     }
 
     @Test
-    public void testGet() throws IOException, JsonReferenceException {
-
-        String refString = "http://localhost:8080/a.json#/a";
-
-        JsonRef ref = JsonRef.fromString(refString);
-
-        JsonNode jsonNode = (new JsonReference()).get(ref);
-
-        ObjectMapper mapper = new ObjectMapper();
-        String json = mapper.writeValueAsString(jsonNode);
-
-        assertThat(json, equalTo("3"));
-    }
-
-    @Test
-    public void testGetFromFile() throws IOException, JsonReferenceException {
-
-        File file = new File("src/test/resources/a.json");
-
-        JsonNode jsonNode = (new JsonReference()).from(file).get("/a");
-
-        ObjectMapper mapper = new ObjectMapper();
-        String json = mapper.writeValueAsString(jsonNode);
-
-        assertThat(json, equalTo("3"));
-    }
-
-    @Test
     public void testProcessFile() throws IOException, JsonReferenceException {
 
         File file = new File("src/test/resources/nest.json");
@@ -160,6 +132,35 @@ public class JsonReferenceTest {
         String json = mapper.writeValueAsString(node);
         assertThat(json, equalTo("{\"q\":{\"a\":3}}"));
     }
+
+    @Test
+    public void testGet() throws IOException, JsonReferenceException {
+
+        String refString = "http://localhost:8080/a.json#/a";
+
+        JsonRef ref = JsonRef.fromString(refString);
+
+        JsonNode jsonNode = (new JsonReference()).get(ref);
+
+        ObjectMapper mapper = new ObjectMapper();
+        String json = mapper.writeValueAsString(jsonNode);
+
+        assertThat(json, equalTo("3"));
+    }
+
+    @Test
+    public void testGetFromFile() throws IOException, JsonReferenceException {
+
+        File file = new File("src/test/resources/a.json");
+
+        JsonNode jsonNode = (new JsonReference()).from(file).get("/a");
+
+        ObjectMapper mapper = new ObjectMapper();
+        String json = mapper.writeValueAsString(jsonNode);
+
+        assertThat(json, equalTo("3"));
+    }
+
 
     @Test
     public void testGetFromJsonNode() throws IOException, JsonReferenceException {
