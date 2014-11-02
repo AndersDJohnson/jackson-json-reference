@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
- * Represent a JSON Reference object node.
+ * Represent a JSON Reference object node (one with a '$ref' key).
  */
 public class JsonRefNode {
 
