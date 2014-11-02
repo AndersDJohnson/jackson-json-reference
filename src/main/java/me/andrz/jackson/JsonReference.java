@@ -107,21 +107,8 @@ public class JsonReference {
 
                 if (JsonRefNode.is(subNode)) {
 
-                    JsonRef ref = getJsonRefForJsonNode(subNode);
-                    JsonRef absRef = getAbsoluteRef(ref, context);
-                    if (stopOnCircular && processed.contains(absRef)) {
-                        logger.debug("skipping on ref: " + absRef);
-                        continue;
-                    }
-                    processed.add(absRef);
-
-                    JsonContext referencedContext = resolveFromContextToContext(ref, context);
-
-                    process(referencedContext, processed);
-
-                    processed.remove(absRef);
-
-                    JsonNode replacementNode = referencedContext.getNode();
+                    JsonNode replacementNode = getReplacementNode(subNode, context, processed);
+                    if (replacementNode == null) continue;
 
                     logger.debug("replacing " + "subNode" + " with " + replacementNode);
                     arrayNode.set(i, replacementNode);
@@ -145,21 +132,8 @@ public class JsonReference {
 
                 if (JsonRefNode.is(subNode)) {
 
-                    JsonRef ref = getJsonRefForJsonNode(subNode);
-                    JsonRef absRef = getAbsoluteRef(ref, context);
-                    if (stopOnCircular && processed.contains(absRef)) {
-                        logger.debug("skipping on ref: " + absRef);
-                        continue;
-                    }
-                    processed.add(absRef);
-
-                    JsonContext referencedContext = resolveFromContextToContext(ref, context);
-
-                    process(referencedContext, processed);
-
-                    processed.remove(absRef);
-
-                    JsonNode replacementNode = referencedContext.getNode();
+                    JsonNode replacementNode = getReplacementNode(subNode, context, processed);
+                    if (replacementNode == null) continue;
 
                     logger.debug("replacing " + "subNode" + " with " + replacementNode);
                     objectNode.set(key, replacementNode);
@@ -169,6 +143,30 @@ public class JsonReference {
                 }
             }
         }
+    }
+
+    public JsonNode getReplacementNode(JsonNode subNode, JsonContext context, Set<JsonRef> processed) throws JsonReferenceException, IOException, JsonPointerException {
+
+        JsonRef ref = getJsonRefForJsonNode(subNode);
+        JsonRef absRef = getAbsoluteRef(ref, context);
+        if (stopOnCircular && processed.contains(absRef)) {
+            logger.debug("skipping on ref: " + absRef);
+            return null;
+        }
+        // add ref to processed set for detection loop in recursion
+        processed.add(absRef);
+
+        JsonContext referencedContext = resolveFromContextToContext(ref, context);
+
+        // recurse
+        process(referencedContext, processed);
+
+        // after recursing, remove ref from processed set for next iteration
+        processed.remove(absRef);
+
+        JsonNode replacementNode = referencedContext.getNode();
+
+        return replacementNode;
     }
 
     public JsonRef getAbsoluteRef(JsonRef ref, JsonContext context) {
