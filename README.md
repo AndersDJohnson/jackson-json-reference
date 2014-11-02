@@ -18,24 +18,24 @@ Specs:
 ## File
 ```java
 File file = new File("src/test/resources/nest.json");
-JsonNode node = (new JsonReference()).process(file);
+JsonNode node = (new JsonReferenceProcessor()).process(file);
 ```
 
 ## URL
 ```java
 URL url = new URL("http://json-schema.org/schema");
-JsonNode node = (new JsonReference()).process(url);
+JsonNode node = (new JsonReferenceProcessor()).process(url);
 ```
 
 ## Settings
 ```java
 ObjectMapper mapper = new ObjectMapper();
 
-JsonReference ref = new JsonReference(mapper);
-ref.setStopOnCircular(false); // default true
-ref.setMaxDepth(2); // default 1
+JsonReference processor = new JsonReferenceProcessor(mapper);
+processor.setStopOnCircular(false); // default true
+processor.setMaxDepth(2); // default 1
 
-JsonNode node = ref.process( /*...*/ );
+JsonNode node = processor.process( /*...*/ );
 ```
 
 ## Output

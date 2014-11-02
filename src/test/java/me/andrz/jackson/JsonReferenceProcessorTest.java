@@ -17,9 +17,9 @@ import static org.junit.Assert.*;
 /**
  *
  */
-public class JsonReferenceTest {
+public class JsonReferenceProcessorTest {
 
-    private static final Logger logger = LogManager.getLogger(JsonReferenceTest.class);
+    private static final Logger logger = LogManager.getLogger(JsonReferenceProcessorTest.class);
 
     private static Server server;
 
@@ -58,7 +58,7 @@ public class JsonReferenceTest {
         File file = new File("src/test/resources/nest.json");
         String expected = "{\"a\":3,\"b\":4,\"c\":{\"q\":{\"$ref\":\"a.json#\"}},\"nest\":[{\"ok\":\"yes\",\"why\":{\"b\":4}},\"a\"]}";
 
-        JsonNode node = (new JsonReference()).process(file);
+        JsonNode node = (new JsonReferenceProcessor()).process(file);
 
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(node);
@@ -71,7 +71,7 @@ public class JsonReferenceTest {
 
         File file = new File("src/test/resources/remote.json");
 
-        JsonNode node = (new JsonReference()).process(file);
+        JsonNode node = (new JsonReferenceProcessor()).process(file);
 
         ObjectMapper mapper = new ObjectMapper();
 
@@ -89,7 +89,7 @@ public class JsonReferenceTest {
 
         File file = new File("src/test/resources/remote.json");
 
-        JsonReference ref = new JsonReference();
+        JsonReferenceProcessor ref = new JsonReferenceProcessor();
         ref.setStopOnCircular(false);
         ref.setMaxDepth(2);
         JsonNode node = ref.process(file);
@@ -110,7 +110,7 @@ public class JsonReferenceTest {
 
         URL url = new URL(JSON_SCHEMA_URL);
 
-        JsonNode node = (new JsonReference()).process(url);
+        JsonNode node = (new JsonReferenceProcessor()).process(url);
 
         ObjectMapper mapper = new ObjectMapper();
 
@@ -126,7 +126,7 @@ public class JsonReferenceTest {
 
         URL url = new URL("http://localhost:8080/ref.json");
 
-        JsonNode node = (new JsonReference()).process(url);
+        JsonNode node = (new JsonReferenceProcessor()).process(url);
 
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(node);
@@ -138,9 +138,9 @@ public class JsonReferenceTest {
 
         String refString = "http://localhost:8080/a.json#/a";
 
-        JsonRef ref = JsonRef.fromString(refString);
+        JsonReference ref = JsonReference.fromString(refString);
 
-        JsonNode jsonNode = (new JsonReference()).get(ref);
+        JsonNode jsonNode = (new JsonReferenceProcessor()).get(ref);
 
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(jsonNode);
@@ -153,7 +153,7 @@ public class JsonReferenceTest {
 
         File file = new File("src/test/resources/a.json");
 
-        JsonNode jsonNode = (new JsonReference()).read(file).at("/a");
+        JsonNode jsonNode = (new JsonReferenceProcessor()).read(file).at("/a");
 
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(jsonNode);
