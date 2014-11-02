@@ -1,13 +1,19 @@
 package me.andrz.jackson;
 
-import com.fasterxml.jackson.databind.*;
-import com.fasterxml.jackson.databind.node.*;
-import com.github.fge.jackson.jsonpointer.*;
-import org.apache.logging.log4j.*;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 /**
  *
@@ -52,35 +58,35 @@ public class JsonReference {
         this.stopOnCircular = stopOnCircular;
     }
 
-    public JsonNode process(File file) throws JsonReferenceException, IOException, JsonPointerException {
+    public JsonNode process(File file) throws JsonReferenceException, IOException {
         JsonContext context = new JsonContext(file);
         process(context);
         return context.getNode();
     }
 
-    public JsonNode process(URL url) throws JsonReferenceException, IOException, JsonPointerException {
+    public JsonNode process(URL url) throws JsonReferenceException, IOException {
         JsonContext context = new JsonContext(url);
         process(context);
         return context.getNode();
     }
 
-    public JsonNode process(JsonContext context) throws JsonReferenceException, IOException, JsonPointerException {
+    public JsonNode process(JsonContext context) throws JsonReferenceException, IOException {
         JsonNode node = context.getNode();
         process(context, node);
         return context.getNode();
     }
 
-    public JsonNode process(JsonContext context, Set<JsonRef> processed) throws JsonReferenceException, IOException, JsonPointerException {
+    public JsonNode process(JsonContext context, Set<JsonRef> processed) throws JsonReferenceException, IOException {
         JsonNode node = context.getNode();
         process(context, node, processed);
         return context.getNode();
     }
 
-    public void process(JsonContext context, JsonNode node) throws JsonReferenceException, IOException, JsonPointerException {
+    public void process(JsonContext context, JsonNode node) throws JsonReferenceException, IOException {
         process(context, node, null);
     }
 
-    public void process(JsonContext context, JsonNode node, Set<JsonRef> processed) throws JsonReferenceException, IOException, JsonPointerException {
+    public void process(JsonContext context, JsonNode node, Set<JsonRef> processed) throws JsonReferenceException, IOException {
 
         if (node == null) {
             return;
@@ -145,7 +151,7 @@ public class JsonReference {
         }
     }
 
-    public JsonNode getReplacementNode(JsonNode subNode, JsonContext context, Set<JsonRef> processed) throws JsonReferenceException, IOException, JsonPointerException {
+    public JsonNode getReplacementNode(JsonNode subNode, JsonContext context, Set<JsonRef> processed) throws JsonReferenceException, IOException {
 
         JsonRef ref = getJsonRefForJsonNode(subNode);
         JsonRef absRef = getAbsoluteRef(ref, context);
@@ -182,7 +188,7 @@ public class JsonReference {
         return ref;
     }
 
-    public JsonContext resolveFromContextToContext(JsonRef ref, JsonContext context) throws IOException, JsonPointerException {
+    public JsonContext resolveFromContextToContext(JsonRef ref, JsonContext context) throws IOException {
 
         JsonContext referencedContext;
         JsonNode referencedNode;
@@ -223,9 +229,8 @@ public class JsonReference {
      * @param ref
      * @return
      * @throws IOException
-     * @throws JsonPointerException
      */
-    public JsonNode get(JsonRef ref) throws IOException, JsonPointerException {
+    public JsonNode get(JsonRef ref) throws IOException {
         JsonNode referencedNode;
 
         String refUri = ref.getUri();

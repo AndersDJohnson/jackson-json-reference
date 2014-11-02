@@ -1,8 +1,7 @@
 package me.andrz.jackson;
 
+import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.github.fge.jackson.jsonpointer.JsonPointer;
-import com.github.fge.jackson.jsonpointer.JsonPointerException;
 
 /**
  * Wraps a JSON node with ability to resolve JSON references.
@@ -15,18 +14,19 @@ public class RefResolvingJsonNode {
         this.node = node;
     }
 
-    public JsonNode get(JsonRef ref) throws JsonPointerException {
+    public JsonNode get(JsonRef ref) {
         JsonNode referencedNode;
 
         String refPointer = ref.getPointer();
 
-        JsonPointer jsonPointer = new JsonPointer(refPointer);
-        referencedNode = jsonPointer.get(node);
+        JsonPointer jsonPointer = JsonPointer.compile(refPointer);
+
+        referencedNode = node.at(jsonPointer);
 
         return referencedNode;
     }
 
-    public JsonNode get(String refString) throws JsonPointerException {
+    public JsonNode get(String refString) {
         refString = localize(refString);
         JsonRef ref = new JsonRef(refString);
         return get(ref);
