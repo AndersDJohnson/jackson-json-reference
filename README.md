@@ -3,7 +3,8 @@ jackson-json-reference
 
 JSON Reference implementation. Process references in JSON documents. Aims for but not limited to full spec compliance.
 
-* Supports URLs & files, with relative & absolute URLs.
+* Supports URLs & files.
+* Relative & absolute reference URIs.
 * Recursive expansion, with options for max depth and stop on circularity.
 
 Specs:
