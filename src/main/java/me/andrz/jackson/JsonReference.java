@@ -9,6 +9,8 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -175,41 +177,46 @@ public class JsonReference {
         return replacementNode;
     }
 
-    public JsonRef getAbsoluteRef(JsonRef ref, JsonContext context) {
-        JsonRef clone = ref.clone();
-        clone.setUri(context.getUrl().toString());
-        return clone;
+    public JsonRef getAbsoluteRef(JsonRef ref, JsonContext context) throws JsonReferenceException {
+        // TODO: More robust URL building.
+        String newRefString = context.getUrl() + "#" + ref.getPointer().toString();
+        JsonRef newRef = JsonRef.fromString(newRefString);
+        return newRef;
     }
 
     public JsonRef getJsonRefForJsonNode(JsonNode node) throws JsonReferenceException {
         JsonRefNode refNode = new JsonRefNode(node);
         String refString = refNode.getRefString();
-        JsonRef ref = new JsonRef(refString);
+        JsonRef ref = JsonRef.fromString(refString);
         return ref;
     }
 
-    public JsonContext resolveFromContextToContext(JsonRef ref, JsonContext context) throws IOException {
+    public JsonContext resolveFromContextToContext(JsonRef ref, JsonContext context) throws IOException, JsonReferenceException {
 
         JsonContext referencedContext;
         JsonNode referencedNode;
 
         URL absoluteReferencedUrl;
-        String refUri = ref.getUri();
+        URI refUri = ref.getUri();
 
         logger.debug("dereferencing " + ref);
 
-        if (ref.isForLocal()) {
+        if (ref.isLocal()) {
             absoluteReferencedUrl = context.getUrl();
             JsonNode clone = new ObjectMapper().readTree(context.getNode().traverse());
             referencedNode = from(clone).get(ref);
         }
-        else if (ref.isForAbsoluteUrl()) {
-            absoluteReferencedUrl = new URL(refUri);
+        else if (ref.isAbsolute()) {
+            absoluteReferencedUrl = refUri.toURL();
             referencedNode = from(absoluteReferencedUrl).get(ref);
         }
         else {
             URL contextUrl = context.getUrl();
-            absoluteReferencedUrl = new URL(contextUrl, refUri);
+            try {
+                absoluteReferencedUrl = contextUrl.toURI().resolve(refUri).toURL();
+            } catch (URISyntaxException e) {
+                throw new JsonReferenceException("Invalid URI for context URL: " + contextUrl);
+            }
             referencedNode = from(absoluteReferencedUrl).get(ref);
         }
 
@@ -233,9 +240,8 @@ public class JsonReference {
     public JsonNode get(JsonRef ref) throws IOException {
         JsonNode referencedNode;
 
-        String refUri = ref.getUri();
-
-        URL url = new URL(refUri);
+        URI refUri = ref.getUri();
+        URL url = refUri.toURL();
 
         referencedNode = from(url).get(ref);
 

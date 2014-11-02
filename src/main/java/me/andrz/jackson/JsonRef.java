@@ -1,61 +1,77 @@
 package me.andrz.jackson;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.fasterxml.jackson.core.JsonPointer;
+
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * Represents a JSON reference string (its URI and pointer).
  */
 public class JsonRef {
 
-    public static final Pattern pattern = Pattern.compile("([^\\#]*)\\#?(.*)");
-
-    private String uri;
-    private String pointer;
+    private URI uri;
+    private JsonPointer pointer;
+    private boolean local;
+    private boolean absolute;
 
     public JsonRef() {}
 
-    public JsonRef(String ref) {
-        this.parseReference(ref);
-    }
+    public JsonRef(URI uri) {
 
-    public void parseReference(String ref) {
-        String uri;
-        String pointer = null;
+        String fragment = uri.getFragment();
 
-        Matcher matcher = pattern.matcher(ref);
-        matcher.find();
-        uri = matcher.group(1);
-        int groupCount = matcher.groupCount();
-        if (groupCount > 1) {
-            pointer = matcher.group(2);
+        JsonPointer pointer;
+
+        if (fragment == null || fragment.isEmpty()) {
+            pointer = JsonPointer.compile(null);
         }
+        else {
+            pointer = JsonPointer.compile(fragment);
+        }
+
+        /*
+         * Remove any extraneous path segments, especially to make semantically empty paths really empty.
+         */
+        uri = uri.normalize();
+
+        absolute = uri.isAbsolute();
+        local = ! uri.isAbsolute() && "".equals(uri.getPath());
+
         this.uri = uri;
         this.pointer = pointer;
     }
 
-    public boolean isForLocal() {
-        return "".equals(uri);
+    public static JsonRef fromString(String string) throws JsonReferenceException {
+        try {
+            return fromURI(new URI(string));
+        } catch (URISyntaxException e) {
+            throw new JsonReferenceException("Invalid URI: " + string);
+        }
     }
 
-    public boolean isForAbsoluteUrl() {
-        return uri.matches("^(.*?)://.*");
+    public static JsonRef fromURI(URI uri) {
+        return new JsonRef(uri);
     }
 
-    public String getUri() {
+    public boolean isLocal() {
+        return local;
+    }
+
+    public boolean isAbsolute() {
+        return absolute;
+    }
+
+    public URI getUri() {
         return uri;
     }
 
-    public void setUri(String uri) {
-        this.uri = uri;
-    }
-
-    public String getPointer() {
+    public JsonPointer getPointer() {
         return pointer;
     }
 
-    public void setPointer(String pointer) {
-        this.pointer = pointer;
+    public String toString() {
+        return uri.toString();
     }
 
     @Override
@@ -65,7 +81,6 @@ public class JsonRef {
 
         JsonRef jsonRef = (JsonRef) o;
 
-        if (pointer != null ? !pointer.equals(jsonRef.pointer) : jsonRef.pointer != null) return false;
         if (uri != null ? !uri.equals(jsonRef.uri) : jsonRef.uri != null) return false;
 
         return true;
@@ -73,21 +88,12 @@ public class JsonRef {
 
     @Override
     public int hashCode() {
-        int result = uri != null ? uri.hashCode() : 0;
-        result = 31 * result + (pointer != null ? pointer.hashCode() : 0);
-        return result;
-    }
-
-    @Override
-    public String toString() {
-        return this.uri + "#" + this.pointer;
+        return uri != null ? uri.hashCode() : 0;
     }
 
     @Override
     public JsonRef clone() {
-        JsonRef ref = new JsonRef();
-        ref.setUri(uri);
-        ref.setPointer(pointer);
+        JsonRef ref = new JsonRef(uri);
         return ref;
     }
 
