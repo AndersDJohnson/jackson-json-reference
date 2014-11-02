@@ -153,28 +153,10 @@ public class JsonReferenceTest {
 
         File file = new File("src/test/resources/a.json");
 
-        JsonNode jsonNode = (new JsonReference()).from(file).get("/a");
+        JsonNode jsonNode = (new JsonReference()).read(file).at("/a");
 
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(jsonNode);
-
-        assertThat(json, equalTo("3"));
-    }
-
-
-    @Test
-    public void testGetFromJsonNode() throws IOException, JsonReferenceException {
-
-        String jsonString = "{\"a\": 3}";
-        JsonNode fromNode = mapper.readTree(jsonString);
-
-        String refString = "#/a";
-        JsonRef ref = JsonRef.fromString(refString);
-
-        JsonNode toNode = (new JsonReference()).from(fromNode).get(ref);
-
-        ObjectMapper mapper = new ObjectMapper();
-        String json = mapper.writeValueAsString(toNode);
 
         assertThat(json, equalTo("3"));
     }

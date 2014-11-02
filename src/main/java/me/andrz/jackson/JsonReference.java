@@ -204,11 +204,11 @@ public class JsonReference {
         if (ref.isLocal()) {
             absoluteReferencedUrl = context.getUrl();
             JsonNode clone = new ObjectMapper().readTree(context.getNode().traverse());
-            referencedNode = from(clone).get(ref);
+            referencedNode = clone.at(ref.getPointer());
         }
         else if (ref.isAbsolute()) {
             absoluteReferencedUrl = refUri.toURL();
-            referencedNode = from(absoluteReferencedUrl).get(ref);
+            referencedNode = read(absoluteReferencedUrl).at(ref.getPointer());
         }
         else {
             URL contextUrl = context.getUrl();
@@ -217,7 +217,7 @@ public class JsonReference {
             } catch (URISyntaxException e) {
                 throw new JsonReferenceException("Invalid URI for context URL: " + contextUrl);
             }
-            referencedNode = from(absoluteReferencedUrl).get(ref);
+            referencedNode = read(absoluteReferencedUrl).at(ref.getPointer());
         }
 
         referencedContext = new JsonContext();
@@ -243,32 +243,22 @@ public class JsonReference {
         URI refUri = ref.getUri();
         URL url = refUri.toURL();
 
-        referencedNode = from(url).get(ref);
+        referencedNode = read(url).at(ref.getPointer());
 
         return referencedNode;
     }
 
-    public RefResolvingJsonNode from(URL url) throws IOException {
-        JsonNode node = mapper.readTree(url);
-        return from(node);
+    public JsonNode read(URL url) throws IOException {
+        return mapper.readTree(url);
     }
 
-    public RefResolvingJsonNode from(File file) throws IOException {
-        return fromFile(file);
+    public JsonNode read(File file) throws IOException {
+        return mapper.readTree(file);
     }
 
-    public RefResolvingJsonNode from(JsonNode node) {
-        return new RefResolvingJsonNode(node);
-    }
-
-    public RefResolvingJsonNode fromFile(File file) throws IOException {
-        JsonNode node = mapper.readTree(file);
-        return from(node);
-    }
-
-    public RefResolvingJsonNode fromFile(String fileString) throws IOException {
+    public JsonNode readFile(String fileString) throws IOException {
         File file = new File(fileString);
-        return fromFile(file);
+        return read(file);
     }
 
 }
