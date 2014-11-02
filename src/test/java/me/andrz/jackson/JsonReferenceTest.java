@@ -1,7 +1,6 @@
 package me.andrz.jackson;
 
 import com.fasterxml.jackson.databind.*;
-import com.github.fge.jackson.jsonpointer.*;
 import org.apache.logging.log4j.*;
 import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.server.Handler;
@@ -15,7 +14,7 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 /**
- * Created by Anders on 10/7/2014.
+ *
  */
 public class JsonReferenceTest {
 
@@ -47,7 +46,7 @@ public class JsonReferenceTest {
     }
 
     @Test
-    public void testConstruct() throws IOException, JsonPointerException {
+    public void testConstruct() throws IOException {
 
         String uri = "http://localhost:8080";
         String pointer = "/a";
@@ -60,7 +59,7 @@ public class JsonReferenceTest {
     }
 
     @Test
-    public void testGet() throws IOException, JsonPointerException {
+    public void testGet() throws IOException {
 
         String refString = "http://localhost:8080/a.json#/a";
 
@@ -75,7 +74,7 @@ public class JsonReferenceTest {
     }
 
     @Test
-    public void testGetFromFile() throws IOException, JsonPointerException {
+    public void testGetFromFile() throws IOException {
 
         File file = new File("src/test/resources/a.json");
 
@@ -88,7 +87,7 @@ public class JsonReferenceTest {
     }
 
     @Test
-    public void testProcessFile() throws IOException, JsonReferenceException, JsonPointerException {
+    public void testProcessFile() throws IOException, JsonReferenceException {
 
         File file = new File("src/test/resources/nest.json");
 
@@ -100,7 +99,7 @@ public class JsonReferenceTest {
     }
 
     @Test
-    public void testProcessFileWithRemote() throws IOException, JsonReferenceException, JsonPointerException {
+    public void testProcessFileWithRemote() throws IOException, JsonReferenceException {
 
         File file = new File("src/test/resources/remote.json");
 
@@ -112,7 +111,7 @@ public class JsonReferenceTest {
     }
 
     @Test
-    public void testProcessFileWithRemoteCircularDeep() throws IOException, JsonReferenceException, JsonPointerException {
+    public void testProcessFileWithRemoteCircularDeep() throws IOException, JsonReferenceException {
 
         File file = new File("src/test/resources/remote.json");
 
@@ -127,7 +126,7 @@ public class JsonReferenceTest {
     }
 
     @Test
-    public void testProcessURLRemote() throws IOException, JsonReferenceException, JsonPointerException {
+    public void testProcessURLRemote() throws IOException, JsonReferenceException {
 
         URL url = new URL("http://json-schema.org/schema");
 
@@ -139,7 +138,7 @@ public class JsonReferenceTest {
     }
 
     @Test
-    public void testProcessURL() throws IOException, JsonReferenceException, JsonPointerException {
+    public void testProcessURL() throws IOException, JsonReferenceException {
 
         URL url = new URL("http://localhost:8080/ref.json");
 
@@ -152,7 +151,7 @@ public class JsonReferenceTest {
     }
 
     @Test
-    public void testGetFromJsonNode() throws IOException, JsonPointerException {
+    public void testGetFromJsonNode() throws IOException {
 
         String jsonString = "{\"a\": 3}";
         JsonNode fromNode = mapper.readTree(jsonString);

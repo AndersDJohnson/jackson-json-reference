@@ -1,6 +1,7 @@
 package me.andrz.jackson;
 
-import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
 import java.io.IOException;
