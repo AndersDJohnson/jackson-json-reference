@@ -46,24 +46,11 @@ public class JsonReferenceTest {
     }
 
     @Test
-    public void testConstruct() throws IOException {
-
-        String uri = "http://localhost:8080";
-        String pointer = "/a";
-        String refString = uri + "#" + pointer;
-
-        JsonRef ref = new JsonRef(refString);
-
-        assertThat(ref.getUri(), equalTo(uri));
-        assertThat(ref.getPointer(), equalTo(pointer));
-    }
-
-    @Test
-    public void testGet() throws IOException {
+    public void testGet() throws IOException, JsonReferenceException {
 
         String refString = "http://localhost:8080/a.json#/a";
 
-        JsonRef ref = new JsonRef(refString);
+        JsonRef ref = JsonRef.fromString(refString);
 
         JsonNode jsonNode = (new JsonReference()).get(ref);
 
@@ -74,7 +61,7 @@ public class JsonReferenceTest {
     }
 
     @Test
-    public void testGetFromFile() throws IOException {
+    public void testGetFromFile() throws IOException, JsonReferenceException {
 
         File file = new File("src/test/resources/a.json");
 
@@ -151,13 +138,13 @@ public class JsonReferenceTest {
     }
 
     @Test
-    public void testGetFromJsonNode() throws IOException {
+    public void testGetFromJsonNode() throws IOException, JsonReferenceException {
 
         String jsonString = "{\"a\": 3}";
         JsonNode fromNode = mapper.readTree(jsonString);
 
         String refString = "#/a";
-        JsonRef ref = new JsonRef(refString);
+        JsonRef ref = JsonRef.fromString(refString);
 
         JsonNode toNode = (new JsonReference()).from(fromNode).get(ref);
 

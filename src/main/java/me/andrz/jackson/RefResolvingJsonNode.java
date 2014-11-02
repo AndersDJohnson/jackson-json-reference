@@ -17,18 +17,16 @@ public class RefResolvingJsonNode {
     public JsonNode get(JsonRef ref) {
         JsonNode referencedNode;
 
-        String refPointer = ref.getPointer();
+        JsonPointer pointer = ref.getPointer();
 
-        JsonPointer jsonPointer = JsonPointer.compile(refPointer);
-
-        referencedNode = node.at(jsonPointer);
+        referencedNode = node.at(pointer);
 
         return referencedNode;
     }
 
-    public JsonNode get(String refString) {
+    public JsonNode get(String refString) throws JsonReferenceException {
         refString = localize(refString);
-        JsonRef ref = new JsonRef(refString);
+        JsonRef ref = JsonRef.fromString(refString);
         return get(ref);
     }
 
