@@ -1,7 +1,7 @@
-import com.fasterxml.jackson.core.JsonGenerationException;
+package me.andrz.jackson;
+
 import com.fasterxml.jackson.databind.*;
 import com.github.fge.jackson.jsonpointer.*;
-import me.andrz.jackson.*;
 import org.apache.logging.log4j.*;
 import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.server.Handler;
