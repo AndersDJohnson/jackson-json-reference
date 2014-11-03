@@ -46,4 +46,4 @@ mapper.writeValue(new File("out.json"), node);
 
 # License
 
-See `LICENSE`.
+See [LICENSE](LICENSE).
