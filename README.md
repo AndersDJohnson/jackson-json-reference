@@ -1,7 +1,7 @@
 jackson-json-reference
 ==============
 
-Java [JSON Reference] implementation, based on [Jackson]. Process references in JSON documents. Aims for but not limited to full [spec](#specs) compliance.
+[JSON Reference] implementation for Java, based on [Jackson]. Process references in JSON documents, such as in [JSON Schema]. Aims for but not limited to full [spec](#specs) compliance.
 
 # Features
 
@@ -13,6 +13,7 @@ Java [JSON Reference] implementation, based on [Jackson]. Process references in 
 
 * [JSON Reference]
 * [JSON Pointer]
+* [JSON Schema]
 
 # Usage
 
@@ -52,3 +53,4 @@ See [LICENSE](LICENSE).
 [Jackson]: https://github.com/FasterXML/jackson
 [JSON Reference]: http://tools.ietf.org/html/draft-pbryan-zyp-json-ref-03
 [JSON Pointer]: http://tools.ietf.org/html/rfc6901
+[JSON Schema]: http://json-schema.org/
