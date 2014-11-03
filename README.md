@@ -1,17 +1,18 @@
 jackson-json-reference
 ==============
 
-JSON Reference implementation. Process references in JSON documents. Aims for but not limited to full spec compliance.
+Java [JSON Reference] implementation, based on [Jackson]. Process references in JSON documents. Aims for but not limited to full [spec](#specs) compliance.
+
+# Features
 
 * Supports URLs & files.
 * Relative & absolute reference URIs.
 * Recursive expansion, with options for max depth and stop on circularity.
 
-Specs:
+# Specs
 
-* [JSON Reference](http://tools.ietf.org/html/draft-pbryan-zyp-json-ref-03)
-* [JSON Pointer](http://tools.ietf.org/html/rfc6901)
-
+* [JSON Reference]
+* [JSON Pointer]
 
 # Usage
 
@@ -47,3 +48,7 @@ mapper.writeValue(new File("out.json"), node);
 # License
 
 See [LICENSE](LICENSE).
+
+[Jackson]: https://github.com/FasterXML/jackson
+[JSON Reference]: http://tools.ietf.org/html/draft-pbryan-zyp-json-ref-03
+[JSON Pointer]: http://tools.ietf.org/html/rfc6901
