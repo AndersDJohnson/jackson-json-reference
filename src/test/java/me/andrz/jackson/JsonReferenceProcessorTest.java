@@ -32,6 +32,16 @@ public class JsonReferenceProcessorTest {
      */
     private static final long JSON_SCHEMA_LENGTH = 1024L * 2; // 2 KB
 
+    private static final String rootClassPath = JsonReferenceProcessorTest.class.getResource("/").getFile();
+
+    private static String resource(String path) {
+        return rootClassPath + path;
+    }
+
+    private static File resourceAsFile(String path) {
+        return new File(resource(path));
+    }
+
     @BeforeClass
     public static void beforeClass() throws Exception {
         server = new Server(8080);
@@ -56,7 +66,7 @@ public class JsonReferenceProcessorTest {
     @Test
     public void testProcessFile() throws IOException, JsonReferenceException {
 
-        File file = new File("src/test/resources/nest.json");
+        File file = resourceAsFile("nest.json");
         String expected = "{\"a\":3,\"b\":4,\"c\":{\"q\":{\"$ref\":\"a.json#\"}},\"nest\":[{\"ok\":\"yes\",\"why\":{\"b\":4}},\"a\"]}";
 
         JsonNode node = (new JsonReferenceProcessor()).process(file);
@@ -70,7 +80,7 @@ public class JsonReferenceProcessorTest {
     @Test
     public void testProcessFileWithRemote() throws IOException, JsonReferenceException {
 
-        File file = new File("src/test/resources/remote.json");
+        File file = resourceAsFile("remote.json");
 
         JsonNode node = (new JsonReferenceProcessor()).process(file);
 
@@ -88,7 +98,7 @@ public class JsonReferenceProcessorTest {
     @Test
     public void testProcessFileWithRemoteCircularDeep() throws IOException, JsonReferenceException {
 
-        File file = new File("src/test/resources/remote.json");
+        File file = resourceAsFile("remote.json");
 
         JsonReferenceProcessor ref = new JsonReferenceProcessor();
         ref.setStopOnCircular(false);
@@ -152,7 +162,7 @@ public class JsonReferenceProcessorTest {
     @Test
     public void testGetFromFile() throws IOException, JsonReferenceException {
 
-        File file = new File("src/test/resources/a.json");
+        File file = resourceAsFile("a.json");
 
         JsonNode jsonNode = (new JsonReferenceProcessor()).read(file).at("/a");
 
@@ -165,7 +175,7 @@ public class JsonReferenceProcessorTest {
     @Test
     public void testGetFromJarFile() throws IOException, JsonReferenceException {
 
-        URL jarFileURL = new URL("jar:file:src/test/resources/a.jar!/a.json");
+        URL jarFileURL = new URL("jar:file:" + resource("a.jar") + "!/a.json");
 
         JsonNode jsonNode = (new JsonReferenceProcessor()).read(jarFileURL).at("/a");
 
