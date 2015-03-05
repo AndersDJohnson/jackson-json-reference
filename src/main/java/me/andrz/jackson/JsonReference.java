@@ -91,10 +91,4 @@ public class JsonReference {
         return uri != null ? uri.hashCode() : 0;
     }
 
-    @Override
-    public JsonReference clone() {
-        JsonReference ref = new JsonReference(uri);
-        return ref;
-    }
-
 }
