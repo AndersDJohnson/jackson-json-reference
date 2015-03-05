@@ -24,8 +24,6 @@ public class JsonReferenceProcessorTest {
 
     private static Server server;
 
-    private static final ObjectMapper mapper = new ObjectMapper();
-
     private static final String JSON_SCHEMA_URL = "http://json-schema.org/schema";
     /**
      * Length in bytes of JSON at [@link JSON_SCHEMA_URL}.
