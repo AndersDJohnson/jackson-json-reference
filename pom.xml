@@ -6,7 +6,7 @@
 
     <groupId>me.andrz.jackson</groupId>
     <artifactId>jackson-json-reference</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>0.1.0-SNAPSHOT</version>
 
     <dependencies>
         <dependency>
