@@ -162,4 +162,17 @@ public class JsonReferenceProcessorTest {
         assertThat(json, equalTo("3"));
     }
 
+    @Test
+    public void testGetFromJarFile() throws IOException, JsonReferenceException {
+
+        URL jarFileURL = new URL("jar:file:src/test/resources/a.jar!/a.json");
+
+        JsonNode jsonNode = (new JsonReferenceProcessor()).read(jarFileURL).at("/a");
+
+        ObjectMapper mapper = new ObjectMapper();
+        String json = mapper.writeValueAsString(jsonNode);
+
+        assertThat(json, equalTo("3"));
+    }
+
 }
