@@ -1,11 +1,12 @@
 package me.andrz.jackson;
 
 import com.fasterxml.jackson.databind.*;
-import org.apache.logging.log4j.*;
 import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.handler.*;
 import org.junit.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.URL;
@@ -19,7 +20,7 @@ import static org.junit.Assert.*;
  */
 public class JsonReferenceProcessorTest {
 
-    private static final Logger logger = LogManager.getLogger(JsonReferenceProcessorTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(JsonReferenceProcessorTest.class);
 
     private static Server server;
 
