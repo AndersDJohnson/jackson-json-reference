@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,7 +22,7 @@ import java.util.Set;
  */
 public class JsonReferenceProcessor {
 
-    private static final Logger logger = LogManager.getLogger(JsonReferenceProcessor.class);
+    private static final Logger logger = LoggerFactory.getLogger(JsonReferenceProcessor.class);
 
     private ObjectMapper mapper;
     private int maxDepth = 1;
