@@ -26,7 +26,7 @@ public class JsonReferenceProcessorTest {
 
     private static final String JSON_SCHEMA_URL = "http://json-schema.org/schema";
     /**
-     * Length in bytes of JSON at [@link JSON_SCHEMA_URL}.
+     * Length in bytes of JSON at {@link JSON_SCHEMA_URL}.
      */
     private static final long JSON_SCHEMA_LENGTH = 1024L * 2; // 2 KB
 
