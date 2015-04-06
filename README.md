@@ -2,7 +2,7 @@ jackson-json-reference
 ==============
 
 [![Build Status](https://travis-ci.org/AndersDJohnson/jackson-json-reference.png)](https://travis-ci.org/AndersDJohnson/jackson-json-reference)
-[ ![Download](https://api.bintray.com/packages/AndersDJohnson/maven/jackson-json-reference/images/download.svg) ](https://bintray.com/AndersDJohnson/maven/jackson-json-reference/_latestVersion)
+[ ![Download](https://api.bintray.com/packages/AndersDJohnson/maven/jackson-json-reference/images/download.svg) ][download]
 
 [JSON Reference] implementation for Java, based on [Jackson]. Process references in JSON documents, such as in [JSON Schema]. Aims for but not limited to full [spec](#specs) compliance.
 
@@ -49,6 +49,50 @@ ObjectMapper mapper = new ObjectMapper();
 mapper.writeValue(new File("out.json"), node);
 ```
 
+
+# Install
+
+## Maven
+
+```xml
+<repositories>
+    <repository>
+        <snapshots>
+            <enabled>false</enabled>
+        </snapshots>
+        <id>bintray-AndersDJohnson-maven</id>
+        <name>bintray-AndersDJohnson-maven</name>
+        <url>http://dl.bintray.com/AndersDJohnson/maven</url>
+    </repository>
+</repositories>
+
+<dependencies>
+    <dependency>
+        <groupId>me.andrz.jackson</groupId>
+        <artifactId>jackson-json-reference</artifactId>
+        <version>0.1.0</version>
+    </dependency>
+</dependencies>
+```
+
+## Gradle
+
+```groovy
+repositories {
+    maven {
+        url  "http://dl.bintray.com/AndersDJohnson/maven" 
+    }
+}
+
+dependencies {
+    compile 'me.andrz.jackson:jackson-json-reference:0.1.0'
+}
+```
+
+## Manual
+
+[Download JAR from BinTray][download].
+
 # License
 
 See [LICENSE](LICENSE).
@@ -57,3 +101,4 @@ See [LICENSE](LICENSE).
 [JSON Reference]: http://tools.ietf.org/html/draft-pbryan-zyp-json-ref-03
 [JSON Pointer]: http://tools.ietf.org/html/rfc6901
 [JSON Schema]: http://json-schema.org/
+[download]: https://bintray.com/artifact/download/AndersDJohnson/maven/me/andrz/jackson/jackson-json-reference/0.1.0/jackson-json-reference-0.1.0.jar
