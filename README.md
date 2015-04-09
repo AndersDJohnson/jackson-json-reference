@@ -77,7 +77,7 @@ mapper.writeValue(new File("out.json"), node);
 
 ## Gradle
 
-```groovy
+```gradle
 repositories {
     maven {
         url  "http://dl.bintray.com/AndersDJohnson/maven" 
