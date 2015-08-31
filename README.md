@@ -2,6 +2,7 @@ jackson-json-reference
 ==============
 
 [![Build Status](https://travis-ci.org/adjohnson916/jackson-json-reference.png)](https://travis-ci.org/adjohnson916/jackson-json-reference)
+[![Codecov](https://img.shields.io/codecov/c/github/adjohnson916/jackson-json-reference.svg)](http://codecov.io/github/adjohnson916/jackson-json-reference)
 [ ![Download](https://api.bintray.com/packages/adjohnson916/maven/jackson-json-reference/images/download.svg) ][download]
 
 [JSON Reference] implementation for Java, based on [Jackson]. Process references in JSON documents, such as in [JSON Schema]. Aims for but not limited to full [spec](#specs) compliance.
