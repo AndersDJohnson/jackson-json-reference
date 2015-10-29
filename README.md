@@ -19,21 +19,21 @@ jackson-json-reference
 * [JSON Pointer]
 * [JSON Schema]
 
-# Usage
+## Usage
 
-## File
+### File
 ```java
 File file = new File("src/test/resources/nest.json");
 JsonNode node = (new JsonReferenceProcessor()).process(file);
 ```
 
-## URL
+### URL
 ```java
 URL url = new URL("http://json-schema.org/schema");
 JsonNode node = (new JsonReferenceProcessor()).process(url);
 ```
 
-## Settings
+### Settings
 ```java
 ObjectMapper mapper = new ObjectMapper();
 
@@ -44,16 +44,16 @@ processor.setMaxDepth(2); // default 1
 JsonNode node = processor.process( /*...*/ );
 ```
 
-## Output
+### Output
 ```java
 ObjectMapper mapper = new ObjectMapper();
 mapper.writeValue(new File("out.json"), node);
 ```
 
 
-# Install
+## Install
 
-## Maven
+### Maven
 
 ```xml
 <repositories>
@@ -76,7 +76,7 @@ mapper.writeValue(new File("out.json"), node);
 </dependencies>
 ```
 
-## Gradle
+### Gradle
 
 ```gradle
 repositories {
@@ -90,11 +90,11 @@ dependencies {
 }
 ```
 
-## Manual
+### Manual
 
 [Download JAR from BinTray][download].
 
-# License
+## License
 
 See [LICENSE](LICENSE).
 
