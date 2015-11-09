@@ -188,7 +188,7 @@ public class JsonReferenceProcessorTest {
     public void testProcessYamlFile() throws IOException, JsonReferenceException {
 
         File file = resourceAsFile("nest.yaml");
-        String expected = "{\"a\":3,\"b\":4,\"c\":{\"q\":{\"$ref\":\"a.json#\"}},\"nest\":[{\"ok\":\"yes\",\"why\":{\"b\":4}},\"a\"]}";
+        String expected = "{\"a\":3,\"b\":4,\"c\":{\"q\":{\"$ref\":\"a.json#\"}},\"nest\":[{\"ok\":true,\"why\":{\"b\":4}},\"a\"]}";
 
         JsonNode node = (new JsonReferenceProcessor().withFactory(new YAMLFactory())).process(file);
 
