@@ -26,7 +26,7 @@ public class JsonReferenceProcessorTest {
 
     private static final String JSON_SCHEMA_URL = "http://json-schema.org/schema";
     /**
-     * Length in bytes of JSON at {@link JSON_SCHEMA_URL}.
+     * Length in bytes of JSON at {@link this.JSON_SCHEMA_URL}.
      */
     private static final long JSON_SCHEMA_LENGTH = 1024L * 2; // 2 KB
 
@@ -183,4 +183,50 @@ public class JsonReferenceProcessorTest {
         assertThat(json, equalTo("3"));
     }
 
+    @Test
+    public void testProcessYamlFileWithNestedScopes() throws IOException, JsonReferenceException {
+
+        File file = resourceAsFile("nest.yaml");
+        String expected = "{\"a\":3,\"b\":4,\"c\":{\"q\":{\"a\":3}},\"nest\":[{\"ok\":true,\"why\":{\"b\":4}},\"a\"],\"d\":{\"e\":{\"f\":3}},\"e\":3,\"f\":3,\"g\":{\"f\":3},\"h\":3}";
+
+        JsonReferenceProcessor processor = new JsonReferenceProcessor();
+        processor.setMaxDepth(-1);
+        processor.setMapperFactory(new YamlObjectMapperFactory());
+        JsonNode node = processor.process(file);
+
+        ObjectMapper mapper = new ObjectMapper();
+        String json = mapper.writeValueAsString(node);
+
+        assertThat(json, equalTo(expected));
+    }
+
+    @Test
+    public void testPreserveReferences() throws IOException, JsonReferenceException {
+
+        File file = resourceAsFile("nest.json");
+        String expected = "{\"a\":3,\"b\":4,\"c\":{\"q\":{\"$ref\":\"a.json#\"},\"x-$ref\":\"ref.json#\"},\"nest\":[{\"ok\":\"yes\",\"why\":{\"b\":4,\"x-$ref\":\"b.json#\"}},\"a\"]}";
+
+        JsonReferenceProcessor processor = new JsonReferenceProcessor();
+        processor.setPreserveRefs(true);
+        JsonNode node = processor.process(file);
+
+        ObjectMapper mapper = new ObjectMapper();
+        String json = mapper.writeValueAsString(node);
+
+        assertThat(json, equalTo(expected));
+    }
+
+    @Test
+    public void testReplaceTopLevelReference() throws IOException, JsonReferenceException {
+
+        File file = resourceAsFile("top.json");
+
+        JsonReferenceProcessor processor = new JsonReferenceProcessor();
+        JsonNode node = processor.process(file);
+
+        String json = new ObjectMapper().writeValueAsString(node);
+
+        String expected = "{\"a\":3}";
+        assertThat(json, equalTo(expected));
+    }
 }
