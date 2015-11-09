@@ -1,0 +1,9 @@
+a: 3
+b: 4
+c:
+  $ref: "ref.json#"
+nest:
+  - ok: yes
+    why:
+      $ref: "b.json#"
+  - "a"

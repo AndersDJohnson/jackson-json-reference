@@ -1,6 +1,7 @@
 package me.andrz.jackson;
 
 import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.handler.*;
@@ -183,4 +184,17 @@ public class JsonReferenceProcessorTest {
         assertThat(json, equalTo("3"));
     }
 
+    @Test
+    public void testProcessYamlFile() throws IOException, JsonReferenceException {
+
+        File file = resourceAsFile("nest.yaml");
+        String expected = "{\"a\":3,\"b\":4,\"c\":{\"q\":{\"$ref\":\"a.json#\"}},\"nest\":[{\"ok\":true,\"why\":{\"b\":4}},\"a\"]}";
+
+        JsonNode node = (new JsonReferenceProcessor().withFactory(new YAMLFactory())).process(file);
+
+        ObjectMapper mapper = new ObjectMapper();
+        String json = mapper.writeValueAsString(node);
+
+        assertThat(json, equalTo(expected));
+    }
 }
