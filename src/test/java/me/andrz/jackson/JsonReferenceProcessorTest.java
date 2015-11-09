@@ -188,9 +188,25 @@ public class JsonReferenceProcessorTest {
     public void testProcessYamlFile() throws IOException, JsonReferenceException {
 
         File file = resourceAsFile("nest.yaml");
-        String expected = "{\"a\":3,\"b\":4,\"c\":{\"q\":{\"$ref\":\"a.json#\"}},\"nest\":[{\"ok\":true,\"why\":{\"b\":4}},\"a\"]}";
+        String expected = "{\"a\":3,\"b\":4,\"c\":{\"q\":{\"$ref\":\"a.json#\"}},\"nest\":[{\"ok\":\"yes\",\"why\":{\"b\":4}},\"a\"]}";
 
         JsonNode node = (new JsonReferenceProcessor().withFactory(new YAMLFactory())).process(file);
+
+        ObjectMapper mapper = new ObjectMapper();
+        String json = mapper.writeValueAsString(node);
+
+        assertThat(json, equalTo(expected));
+    }
+
+    @Test
+    public void testPreserveReferences() throws IOException, JsonReferenceException {
+
+        File file = resourceAsFile("nest.json");
+        String expected = "{\"a\":3,\"b\":4,\"c\":{\"q\":{\"$ref\":\"a.json#\"},\"x-$ref\":\"ref.json#\"},\"nest\":[{\"ok\":\"yes\",\"why\":{\"b\":4,\"x-$ref\":\"b.json#\"}},\"a\"]}";
+
+        JsonReferenceProcessor processor = new JsonReferenceProcessor();
+        processor.setPreserveRefs(true);
+        JsonNode node = processor.process(file);
 
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(node);

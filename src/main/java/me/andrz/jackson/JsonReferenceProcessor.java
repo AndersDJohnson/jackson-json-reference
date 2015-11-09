@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,16 +29,8 @@ public class JsonReferenceProcessor {
     private ObjectMapper mapper;
     private int maxDepth = 1;
     private boolean stopOnCircular = true;
-
-    public JsonFactory getFactory() { return factory; }
-
-    public void setFactory(JsonFactory factory) { this.factory = factory; }
-
-    public JsonReferenceProcessor withFactory(JsonFactory factory) {
-        setFactory(factory);
-        return this;
-    }
-
+    private boolean preserveRefs = false;
+    private String refPrefix = "x-$ref";
     private JsonFactory factory = new JsonFactory();
 
     public JsonReferenceProcessor() {
@@ -70,6 +63,23 @@ public class JsonReferenceProcessor {
 
     public void setStopOnCircular(boolean stopOnCircular) {
         this.stopOnCircular = stopOnCircular;
+    }
+
+    public boolean isPreserveRefs() { return preserveRefs; }
+
+    public void setPreserveRefs(boolean preserveRefs) { this.preserveRefs = preserveRefs; }
+
+    public JsonFactory getFactory() { return factory; }
+
+    public void setFactory(JsonFactory factory) { this.factory = factory; }
+
+    public String getRefPrefix() { return refPrefix; }
+
+    public void setRefPrefix(String refPrefix) { this.refPrefix = refPrefix; }
+
+    public JsonReferenceProcessor withFactory(JsonFactory factory) {
+        setFactory(factory);
+        return this;
     }
 
     public JsonNode process(File file) throws JsonReferenceException, IOException {
@@ -187,7 +197,9 @@ public class JsonReferenceProcessor {
         processed.remove(absRef);
 
         JsonNode replacementNode = referencedContext.getNode();
-
+        if (preserveRefs && replacementNode.isObject()) {
+            ((ObjectNode)replacementNode).replace(refPrefix, new TextNode(ref.toString()));
+        }
         return replacementNode;
     }
 
