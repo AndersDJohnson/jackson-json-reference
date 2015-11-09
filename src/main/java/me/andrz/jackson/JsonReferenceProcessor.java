@@ -1,5 +1,6 @@
 package me.andrz.jackson;
 
+import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -27,6 +28,17 @@ public class JsonReferenceProcessor {
     private ObjectMapper mapper;
     private int maxDepth = 1;
     private boolean stopOnCircular = true;
+
+    public JsonFactory getFactory() { return factory; }
+
+    public void setFactory(JsonFactory factory) { this.factory = factory; }
+
+    public JsonReferenceProcessor withFactory(JsonFactory factory) {
+        setFactory(factory);
+        return this;
+    }
+
+    private JsonFactory factory = new JsonFactory();
 
     public JsonReferenceProcessor() {
         mapper = new ObjectMapper();
@@ -62,6 +74,7 @@ public class JsonReferenceProcessor {
 
     public JsonNode process(File file) throws JsonReferenceException, IOException {
         JsonContext context = new JsonContext(file);
+        if (factory != null) context.withFactory(factory);
         process(context);
         return context.getNode();
     }
@@ -197,7 +210,8 @@ public class JsonReferenceProcessor {
 
         if (ref.isLocal()) {
             absoluteReferencedUrl = context.getUrl();
-            JsonNode clone = new ObjectMapper().readTree(context.getNode().traverse());
+            ObjectMapper mapper = factory == null ? new ObjectMapper() : new ObjectMapper(factory);
+            JsonNode clone = mapper.readTree(context.getNode().traverse());
             referencedNode = clone.at(ref.getPointer());
         }
         else if (ref.isAbsolute()) {
