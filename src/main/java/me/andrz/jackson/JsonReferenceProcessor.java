@@ -1,9 +1,10 @@
 package me.andrz.jackson;
 
-import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.MissingNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import org.slf4j.Logger;
@@ -18,6 +19,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  *
@@ -26,28 +28,11 @@ public class JsonReferenceProcessor {
 
     private static final Logger logger = LoggerFactory.getLogger(JsonReferenceProcessor.class);
 
-    private ObjectMapper mapper;
     private int maxDepth = 1;
     private boolean stopOnCircular = true;
     private boolean preserveRefs = false;
     private String refPrefix = "x-$ref";
-    private JsonFactory factory = new JsonFactory();
-
-    public JsonReferenceProcessor() {
-        mapper = new ObjectMapper();
-    }
-
-    public JsonReferenceProcessor(ObjectMapper mapper) {
-        this.mapper = mapper;
-    }
-
-    public ObjectMapper getMapper() {
-        return mapper;
-    }
-
-    public void setMapper(ObjectMapper mapper) {
-        this.mapper = mapper;
-    }
+    private ObjectMapperFactory mapperFactory;
 
     public int getMaxDepth() {
         return maxDepth;
@@ -65,66 +50,78 @@ public class JsonReferenceProcessor {
         this.stopOnCircular = stopOnCircular;
     }
 
-    public boolean isPreserveRefs() { return preserveRefs; }
+    public boolean isPreserveRefs() {
+        return preserveRefs;
+    }
 
-    public void setPreserveRefs(boolean preserveRefs) { this.preserveRefs = preserveRefs; }
+    public void setPreserveRefs(boolean preserveRefs) {
+        this.preserveRefs = preserveRefs;
+    }
 
-    public JsonFactory getFactory() { return factory; }
+    public String getRefPrefix() {
+        return refPrefix;
+    }
 
-    public void setFactory(JsonFactory factory) { this.factory = factory; }
+    public void setRefPrefix(String refPrefix) {
+        this.refPrefix = refPrefix;
+    }
 
-    public String getRefPrefix() { return refPrefix; }
+    public ObjectMapperFactory getMapperFactory() {
+        return mapperFactory;
+    }
 
-    public void setRefPrefix(String refPrefix) { this.refPrefix = refPrefix; }
+    public void setMapperFactory(ObjectMapperFactory mapperFactory) {
+        this.mapperFactory = mapperFactory;
+    }
 
-    public JsonReferenceProcessor withFactory(JsonFactory factory) {
-        setFactory(factory);
-        return this;
+    ObjectMapperFactory someMapperFactory() {
+        return mapperFactory == null ? DefaultObjectMapperFactory.instance : mapperFactory;
     }
 
     public JsonNode process(File file) throws JsonReferenceException, IOException {
         JsonContext context = new JsonContext(file);
-        if (factory != null) context.withFactory(factory);
-        process(context);
-        return context.getNode();
+        context.setFactory(someMapperFactory());
+        return process(context);
     }
 
     public JsonNode process(URL url) throws JsonReferenceException, IOException {
         JsonContext context = new JsonContext(url);
-        process(context);
-        return context.getNode();
-    }
-
-    public JsonNode process(JsonContext context) throws JsonReferenceException, IOException {
-        JsonNode node = context.getNode();
-        process(context, node);
-        return context.getNode();
+        context.setFactory(someMapperFactory());
+        return process(context);
     }
 
     public JsonNode process(JsonContext context, Set<JsonReference> processed) throws JsonReferenceException, IOException {
+        if (context.getFactory() == DefaultObjectMapperFactory.instance)
+            context.setFactory(someMapperFactory());
         JsonNode node = context.getNode();
-        process(context, node, processed);
-        return context.getNode();
+        return process(context, node, processed);
     }
 
-    public void process(JsonContext context, JsonNode node) throws JsonReferenceException, IOException {
-        process(context, node, null);
+    public JsonNode process(JsonContext context) throws JsonReferenceException, IOException {
+        return process(context, context.getNode(), null);
     }
 
-    public void process(JsonContext context, JsonNode node, Set<JsonReference> processed) throws JsonReferenceException, IOException {
+    public JsonNode process(JsonContext context, JsonNode node, Set<JsonReference> processed) throws JsonReferenceException, IOException {
 
         if (node == null) {
-            return;
+            return node;
         }
 
         if (processed == null) {
             processed = new HashSet<JsonReference>();
         }
 
-        logger.debug("processed: " + processed);
+        logger.trace("processed: " + processed);
 
-        if (processed.size() >= maxDepth) {
-            return;
+        // Check if the whole node must be replaced
+        if (JsonReferenceNode.is(node)) {
+            JsonNode replacementNode = getReplacementNode(node, context, processed);
+            logger.debug("replacing whole node with" + replacementNode);
+            return replacementNode;
+        }
+
+        if (maxDepth >= 0 && processed.size() >= maxDepth) {
+            return node;
         }
 
         if (node.isArray()) {
@@ -134,23 +131,23 @@ public class JsonReferenceProcessor {
             while (elements.hasNext()) {
                 JsonNode subNode = elements.next();
 
-                logger.debug("i=" + i);
+                logger.trace("i=" + i);
 
                 if (JsonReferenceNode.is(subNode)) {
 
                     JsonNode replacementNode = getReplacementNode(subNode, context, processed);
-                    if (replacementNode == null) continue;
-
+                    if (replacementNode == null) {
+                        logger.info("Got null replacement node on position " + i);
+                        continue;
+                    }
                     logger.debug("replacing " + "subNode" + " with " + replacementNode);
                     arrayNode.set(i, replacementNode);
                     ++i;
-                }
-                else {
+                } else {
                     process(context, subNode, processed);
                 }
             }
-        }
-        else if (node.isObject()) {
+        } else if (node.isObject()) {
             ObjectNode objectNode = (ObjectNode) node;
 
             Iterator<Map.Entry<String, JsonNode>> fields = objectNode.fields();
@@ -159,21 +156,23 @@ public class JsonReferenceProcessor {
                 String key = field.getKey();
                 JsonNode subNode = field.getValue();
 
-                logger.debug("key=" + key);
+                logger.trace("key=" + key);
 
                 if (JsonReferenceNode.is(subNode)) {
 
                     JsonNode replacementNode = getReplacementNode(subNode, context, processed);
-                    if (replacementNode == null) continue;
-
+                    if (replacementNode == null) {
+                        logger.info("Got null replacement node for key " + key);
+                        continue;
+                    }
                     logger.debug("replacing " + "subNode" + " with " + replacementNode);
                     objectNode.set(key, replacementNode);
-                }
-                else {
+                } else {
                     process(context, subNode, processed);
                 }
             }
         }
+        return node;
     }
 
     public JsonNode getReplacementNode(JsonNode node, JsonContext context, Set<JsonReference> processed) throws JsonReferenceException, IOException {
@@ -191,21 +190,19 @@ public class JsonReferenceProcessor {
 
         JsonContext referencedContext = resolveFromContextToContext(ref, context);
 
-        // recurse
-        process(referencedContext, processed);
+        // recurse, throw away referencedContext because it could be replaced completely
+        JsonNode replacementNode = process(referencedContext, processed);
         // after recursing, remove ref from processed set for next iteration
         processed.remove(absRef);
 
-        JsonNode replacementNode = referencedContext.getNode();
         if (preserveRefs && replacementNode.isObject()) {
-            ((ObjectNode)replacementNode).replace(refPrefix, new TextNode(ref.toString()));
+            ((ObjectNode) replacementNode).replace(refPrefix, new TextNode(ref.toString()));
         }
         return replacementNode;
     }
 
     public JsonReference getAbsoluteRef(JsonReference ref, JsonContext context) throws JsonReferenceException {
-        // TODO: More robust URL building.
-        String newRefString = context.getUrl() + "#" + ref.getPointer().toString();
+        String newRefString = context.getUrl().toString().split("#")[0] + "#" + ref.getPointer().toString();
         JsonReference newRef = JsonReference.fromString(newRefString);
         return newRef;
     }
@@ -222,15 +219,11 @@ public class JsonReferenceProcessor {
 
         if (ref.isLocal()) {
             absoluteReferencedUrl = context.getUrl();
-            ObjectMapper mapper = factory == null ? new ObjectMapper() : new ObjectMapper(factory);
-            JsonNode clone = mapper.readTree(context.getNode().traverse());
-            referencedNode = clone.at(ref.getPointer());
-        }
-        else if (ref.isAbsolute()) {
+            referencedNode = context.at(ref.getPointer());
+        } else if (ref.isAbsolute()) {
             absoluteReferencedUrl = refUri.toURL();
             referencedNode = read(absoluteReferencedUrl).at(ref.getPointer());
-        }
-        else {
+        } else {
             URL contextUrl = context.getUrl();
             try {
                 absoluteReferencedUrl = contextUrl.toURI().resolve(refUri).toURL();
@@ -240,11 +233,9 @@ public class JsonReferenceProcessor {
             referencedNode = read(absoluteReferencedUrl).at(ref.getPointer());
         }
 
-        referencedContext = new JsonContext();
-        referencedContext.setUrl(absoluteReferencedUrl);
+        referencedContext = context.child(absoluteReferencedUrl);
         referencedContext.setNode(referencedNode);
-
-        referencedContext.setUrl(absoluteReferencedUrl);
+        referencedContext.setFactory(context.getFactory());
 
         return referencedContext;
     }
@@ -268,12 +259,26 @@ public class JsonReferenceProcessor {
         return referencedNode;
     }
 
+    private ConcurrentHashMap<Object, JsonNode> cache = new ConcurrentHashMap<>(1);
+
     public JsonNode read(URL url) throws IOException {
-        return mapper.readTree(url);
+        putIntoCache(url);
+        return cache.get(url);
     }
 
     public JsonNode read(File file) throws IOException {
-        return mapper.readTree(file);
+        putIntoCache(file);
+        return cache.get(file);
+    }
+
+    // can only be an URL or a File
+    private void putIntoCache(Object any) throws IOException {
+        if (!cache.contains(any)) {
+            logger.debug("Putting into the cache: " + any);
+            ObjectMapper mapper = someMapperFactory().create();
+            JsonNode tree = (any instanceof URL) ? mapper.readTree((URL) any) : mapper.readTree((File) any);
+            cache.putIfAbsent(any, tree);
+        }
     }
 
     public JsonNode readFile(String fileString) throws IOException {
