@@ -31,8 +31,13 @@ public class JsonReferenceProcessor {
     private int maxDepth = 1;
     private boolean stopOnCircular = true;
     private boolean preserveRefs = false;
+    private boolean cacheInMemory = true;
     private String refPrefix = "x-$ref";
     private ObjectMapperFactory mapperFactory;
+
+    public boolean isCacheInMemory() { return cacheInMemory; }
+
+    public void setCacheInMemory(boolean cacheInMemory) { this.cacheInMemory = cacheInMemory; }
 
     public int getMaxDepth() {
         return maxDepth;
@@ -273,7 +278,7 @@ public class JsonReferenceProcessor {
 
     // can only be an URL or a File
     private void putIntoCache(Object any) throws IOException {
-        if (!cache.contains(any)) {
+        if (cacheInMemory && !cache.contains(any)) {
             logger.debug("Putting into the cache: " + any);
             ObjectMapper mapper = someMapperFactory().create();
             JsonNode tree = (any instanceof URL) ? mapper.readTree((URL) any) : mapper.readTree((File) any);
