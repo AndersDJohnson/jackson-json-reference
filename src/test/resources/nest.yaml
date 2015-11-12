@@ -1,0 +1,21 @@
+a: 3
+b: 4
+c:
+  $ref: "ref.json#"
+nest:
+  - ok: yes
+    why:
+      $ref: "b.json#"
+  - "a"
+d:
+  e:
+    f:
+      $ref: "#/e"
+e:
+  $ref: "#/f"
+f:
+  $ref: "#/a"
+g:
+  $ref: "#/d/e"
+h:
+  $ref: "#/e"
