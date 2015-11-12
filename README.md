@@ -17,7 +17,7 @@ jackson-json-reference
 
 * [JSON Reference]
 * [JSON Pointer]
-* [JSON Schema]
+* [JSON Schema]&nbsp;([spec][JSON Schema Spec])
 
 ## Usage
 
@@ -99,7 +99,8 @@ dependencies {
 See [LICENSE](LICENSE).
 
 [Jackson]: https://github.com/FasterXML/jackson
-[JSON Reference]: https://tools.ietf.org/html/draft-zyp-json-schema-04
+[JSON Reference]: https://tools.ietf.org/html/draft-pbryan-zyp-json-ref-03
 [JSON Pointer]: http://tools.ietf.org/html/rfc6901
 [JSON Schema]: http://json-schema.org/
+[JSON Schema Spec]: https://tools.ietf.org/html/draft-zyp-json-schema-04
 [download]: https://bintray.com/artifact/download/AndersDJohnson/maven/me/andrz/jackson/jackson-json-reference/0.1.0/jackson-json-reference-0.1.0.jar
