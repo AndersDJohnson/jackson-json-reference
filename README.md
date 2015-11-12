@@ -15,7 +15,7 @@ jackson-json-reference
 
 # Specs
 
-* [JSON Reference]
+* [JSON Reference]&nbsp;([extended by JSON Schema][JSON Reference Extended])
 * [JSON Pointer]
 * [JSON Schema]&nbsp;([spec][JSON Schema Spec])
 
@@ -100,6 +100,7 @@ See [LICENSE](LICENSE).
 
 [Jackson]: https://github.com/FasterXML/jackson
 [JSON Reference]: https://tools.ietf.org/html/draft-pbryan-zyp-json-ref-03
+[JSON Reference Extended]: https://tools.ietf.org/html/draft-zyp-json-schema-04#section-7.1
 [JSON Pointer]: http://tools.ietf.org/html/rfc6901
 [JSON Schema]: http://json-schema.org/
 [JSON Schema Spec]: https://tools.ietf.org/html/draft-zyp-json-schema-04
