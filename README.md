@@ -99,7 +99,7 @@ dependencies {
 See [LICENSE](LICENSE).
 
 [Jackson]: https://github.com/FasterXML/jackson
-[JSON Reference]: http://tools.ietf.org/html/draft-pbryan-zyp-json-ref-03
+[JSON Reference]: https://tools.ietf.org/html/draft-zyp-json-schema-04
 [JSON Pointer]: http://tools.ietf.org/html/rfc6901
 [JSON Schema]: http://json-schema.org/
 [download]: https://bintray.com/artifact/download/AndersDJohnson/maven/me/andrz/jackson/jackson-json-reference/0.1.0/jackson-json-reference-0.1.0.jar
