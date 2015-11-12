@@ -189,6 +189,23 @@ public class JsonReferenceProcessorTest {
     }
 
     @Test
+    public void testProcessNestedConflicts() throws IOException, JsonReferenceException {
+
+        File file = resourceAsFile("nest-conflict.json");
+        String expected = "{\"a\":3,\"b\":{\"c\":3},\"c\":3}";
+
+        JsonReferenceProcessor processor = new JsonReferenceProcessor();
+        processor.setMaxDepth(-1);
+        processor.setMapperFactory(new YamlObjectMapperFactory());
+        JsonNode node = processor.process(file);
+
+        ObjectMapper mapper = new ObjectMapper();
+        String json = mapper.writeValueAsString(node);
+
+        assertThat(json, equalTo(expected));
+    }
+
+    @Test
     public void testProcessYamlFileWithNestedScopes() throws IOException, JsonReferenceException {
 
         File file = resourceAsFile("nest.yaml");
