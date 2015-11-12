@@ -24,6 +24,8 @@ public class JsonReferenceProcessorTest {
 
     private static Server server;
 
+    private static final String IGNORE_OFFLINE = "ignoring offline";
+
     private static final String JSON_SCHEMA_URL = "http://json-schema.org/schema";
     /**
      * Length in bytes of JSON at {@link this.JSON_SCHEMA_URL}.
@@ -75,6 +77,7 @@ public class JsonReferenceProcessorTest {
         assertThat(json, equalTo(expected));
     }
 
+//    @Ignore(IGNORE_OFFLINE)
     @Test
     public void testProcessFileWithRemote() throws IOException, JsonReferenceException {
 
@@ -93,6 +96,7 @@ public class JsonReferenceProcessorTest {
         assertThat(outFile.length(), greaterThan(JSON_SCHEMA_LENGTH));
     }
 
+//    @Ignore(IGNORE_OFFLINE)
     @Test
     public void testProcessFileWithRemoteCircularDeep() throws IOException, JsonReferenceException {
 
@@ -114,6 +118,7 @@ public class JsonReferenceProcessorTest {
         assertThat(outFile.length(), greaterThan(JSON_SCHEMA_LENGTH));
     }
 
+//    @Ignore(IGNORE_OFFLINE)
     @Test
     public void testProcessURLRemote() throws IOException, JsonReferenceException {
 
