@@ -206,9 +206,9 @@ public class JsonReferenceProcessorTest {
     }
 
     @Test
-    public void testProcessYamlFileWithNestedScopes() throws IOException, JsonReferenceException {
+    public void testProcessYamlFileWithNestedMixedTypeScopes() throws IOException, JsonReferenceException {
 
-        File file = resourceAsFile("nest.yaml");
+        File file = resourceAsFile("nest-yaml.yaml");
         String expected = "{\"a\":3,\"b\":4,\"c\":{\"q\":{\"a\":3}},\"nest\":[{\"ok\":true,\"why\":{\"b\":4}},\"a\"],\"d\":{\"e\":{\"f\":3}},\"e\":3,\"f\":3,\"g\":{\"f\":3},\"h\":3}";
 
         JsonReferenceProcessor processor = new JsonReferenceProcessor();
