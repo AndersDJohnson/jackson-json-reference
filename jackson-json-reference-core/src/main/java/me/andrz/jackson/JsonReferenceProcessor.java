@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.MissingNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,14 +86,33 @@ public class JsonReferenceProcessor {
 
     public JsonNode process(File file) throws JsonReferenceException, IOException {
         JsonContext context = new JsonContext(file);
-        context.setFactory(someMapperFactory());
+        context.setFactory(getFactoryForFile(file));
         return process(context);
     }
 
     public JsonNode process(URL url) throws JsonReferenceException, IOException {
         JsonContext context = new JsonContext(url);
-        context.setFactory(someMapperFactory());
+        context.setFactory(getFactoryForFile(url));
         return process(context);
+    }
+
+    public ObjectMapperFactory getFactoryForFile(File file) throws IOException {
+        return getFactoryForFile(file.getAbsolutePath());
+    }
+
+    public ObjectMapperFactory getFactoryForFile(URL url) throws IOException {
+        return getFactoryForFile(url.getPath());
+    }
+
+    public ObjectMapperFactory getFactoryForFile(String path) throws IOException {
+        // TOOD: Consider using file type detectors and MIME types.
+//        String contentType = Files.probeContentType(Paths.get(path));
+//        System.out.println(contentType);
+        String ext = FilenameUtils.getExtension(path);
+        if ("yml".equals(ext) || "yaml".equals(ext)) {
+            return new YamlObjectMapperFactory();
+        }
+        return DefaultObjectMapperFactory.instance;
     }
 
     public JsonNode process(JsonContext context, Set<JsonReference> processed) throws JsonReferenceException, IOException {
@@ -241,7 +261,7 @@ public class JsonReferenceProcessor {
         referencedContext = new JsonContext();
         referencedContext.setUrl(absoluteReferencedUrl);
         referencedContext.setNode(referencedNode);
-        referencedContext.setFactory(context.getFactory());
+        referencedContext.setFactory(getFactoryForFile(absoluteReferencedUrl));
 
         return referencedContext;
     }
