@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import static org.hamcrest.CoreMatchers.*;
@@ -40,6 +41,10 @@ public class JsonReferenceProcessorTest {
 
     private static File resourceAsFile(String path) {
         return new File(resource(path));
+    }
+
+    private static URL resourceAsURL(String path) throws MalformedURLException {
+        return resourceAsFile(path).toURI().toURL();
     }
 
     @BeforeClass
@@ -215,6 +220,34 @@ public class JsonReferenceProcessorTest {
         processor.setMaxDepth(-1);
         processor.setMapperFactory(new YamlObjectMapperFactory());
         JsonNode node = processor.process(file);
+
+        ObjectMapper mapper = new ObjectMapper();
+        String json = mapper.writeValueAsString(node);
+
+        assertThat(json, equalTo(expected));
+    }
+
+    @Test
+    public void testDetectYamlFile() throws JsonReferenceException, IOException {
+        File file = resourceAsFile("a.yaml");
+        String expected = "{\"a\":3}";
+
+        JsonReferenceProcessor processor = new JsonReferenceProcessor();
+        JsonNode node = processor.process(file);
+
+        ObjectMapper mapper = new ObjectMapper();
+        String json = mapper.writeValueAsString(node);
+
+        assertThat(json, equalTo(expected));
+    }
+
+    @Test
+    public void testDetectYamlUrl() throws JsonReferenceException, IOException {
+        URL url = resourceAsURL("a.yaml");
+        String expected = "{\"a\":3}";
+
+        JsonReferenceProcessor processor = new JsonReferenceProcessor();
+        JsonNode node = processor.process(url);
 
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(node);
