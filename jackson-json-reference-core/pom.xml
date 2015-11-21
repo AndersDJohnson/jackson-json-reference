@@ -3,14 +3,14 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>me.andrz.jackson</groupId>
-    <artifactId>jackson-json-reference</artifactId>
+    <artifactId>jackson-json-reference-core</artifactId>
     <version>0.1.1-SNAPSHOT</version>
-    <packaging>pom</packaging>
 
-    <modules>
-        <module>jackson-json-reference-core</module>
-        <module>jackson-json-reference-cli</module>
-    </modules>
+    <parent>
+        <groupId>me.andrz.jackson</groupId>
+        <artifactId>jackson-json-reference</artifactId>
+        <version>0.1.1-SNAPSHOT</version>
+    </parent>
 
     <description>JSON Reference for Java with Jackson.</description>
 
@@ -19,7 +19,7 @@
         <github.repo>jackson-json-reference</github.repo>
         <bintray.user>AndersDJohnson</bintray.user>
         <bintray.repo>maven</bintray.repo>
-        <bintray.package>jackson-json-reference</bintray.package>
+        <bintray.package>jackson-json-reference-core</bintray.package>
     </properties>
 
     <scm>
