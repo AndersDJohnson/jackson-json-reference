@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.node.MissingNode;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
@@ -18,10 +17,8 @@ public class JsonContext {
     JsonNode node;
     URL url;
     ObjectMapperFactory jf;
-    // sometimes deeply nested context references outer
-    // parents allow traversing contexts chain
-    // the topmost context should enclose the whole document
-    private JsonContext parent;
+    private JsonNode document;
+    private boolean isDocument;
 
     public JsonContext() {}
 
@@ -31,8 +28,8 @@ public class JsonContext {
      * @return
      * @throws IOException
      */
-    public JsonContext(File file) throws MalformedURLException {
-        this.url = file.toURI().toURL();
+    public JsonContext(File file) throws IOException {
+        this(file.toURI().toURL());
     }
 
     /**
@@ -41,18 +38,20 @@ public class JsonContext {
      * @return
      * @throws IOException
      */
-    public JsonContext(URL url) {
+    public JsonContext(URL url) throws IOException {
         this.url = url;
     }
-
-    private void init() throws IOException {
+    public JsonNode getDocument() throws IOException {
         ObjectMapper mapper = getFactory().create();
-        JsonNode node = mapper.readTree(url);
-        this.node = node;
+        document = mapper.readTree(url);
+        return document;
     }
 
     public JsonNode getNode() throws IOException {
-        if (node == null) init();
+        if (node == null) {
+            ObjectMapper mapper = getFactory().create();
+            node = mapper.readTree(url);
+        }
         return node;
     }
 
@@ -86,25 +85,26 @@ public class JsonContext {
     }
 
     /**
-     * Look up a node including enclosing contexts if needed
+     * Look up a node including on document if needed
      *
      * @param pointer
      * @return
      */
-    public JsonNode at(JsonPointer pointer) {
-        JsonNode optionalNode = node.at(pointer);
-        boolean tryParent = optionalNode == MissingNode.getInstance() && parent != null;
-        return  tryParent ? parent.at(pointer) : optionalNode.deepCopy();
+    public JsonNode at(JsonPointer pointer) throws IOException {
+        return getDocument().at(pointer);
+
+//        JsonNode optionalNode = node.at(pointer);
+//        boolean tryDocument = optionalNode == MissingNode.getInstance() && getDocument() != null;
+//        if (tryDocument) {
+//            JsonNode n = getDocument().at(pointer);
+//            return n;
+//        }
+//        else {
+//            return optionalNode.deepCopy();
+//        }
+
+//        boolean tryDocument = optionalNode == MissingNode.getInstance() && getDocument() != null;
+//        return  tryDocument ? getDocument().at(pointer) : optionalNode.deepCopy();
     }
 
-    /**
-     * Creates a child context with this as a parent
-     * @param url
-     * @return
-     */
-    public JsonContext child(URL url) {
-        JsonContext child = new JsonContext(url);
-        child.parent = this;
-        return child;
-    }
 }

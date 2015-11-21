@@ -1,11 +1,11 @@
 a: 3
 b: 4
 c:
-  $ref: "ref.json#"
+  $ref: "ref.y#"
 nest:
   - ok: yes
     why:
-      $ref: "http://localhost:8080/b.json#"
+      $ref: "http://localhost:8080/b.yaml#"
   - "a"
 d:
   e:

@@ -24,6 +24,8 @@ public class JsonReferenceProcessorTest {
 
     private static Server server;
 
+    private static final String IGNORE_OFFLINE = "ignoring offline";
+
     private static final String JSON_SCHEMA_URL = "http://json-schema.org/schema";
     /**
      * Length in bytes of JSON at {@link this.JSON_SCHEMA_URL}.
@@ -75,6 +77,7 @@ public class JsonReferenceProcessorTest {
         assertThat(json, equalTo(expected));
     }
 
+//    @Ignore(IGNORE_OFFLINE)
     @Test
     public void testProcessFileWithRemote() throws IOException, JsonReferenceException {
 
@@ -93,6 +96,7 @@ public class JsonReferenceProcessorTest {
         assertThat(outFile.length(), greaterThan(JSON_SCHEMA_LENGTH));
     }
 
+//    @Ignore(IGNORE_OFFLINE)
     @Test
     public void testProcessFileWithRemoteCircularDeep() throws IOException, JsonReferenceException {
 
@@ -114,6 +118,7 @@ public class JsonReferenceProcessorTest {
         assertThat(outFile.length(), greaterThan(JSON_SCHEMA_LENGTH));
     }
 
+//    @Ignore(IGNORE_OFFLINE)
     @Test
     public void testProcessURLRemote() throws IOException, JsonReferenceException {
 
@@ -184,9 +189,26 @@ public class JsonReferenceProcessorTest {
     }
 
     @Test
-    public void testProcessYamlFileWithNestedScopes() throws IOException, JsonReferenceException {
+    public void testProcessNestedConflicts() throws IOException, JsonReferenceException {
 
-        File file = resourceAsFile("nest.yaml");
+        File file = resourceAsFile("nest-conflict.json");
+        String expected = "{\"a\":3,\"b\":{\"c\":3},\"c\":3}";
+
+        JsonReferenceProcessor processor = new JsonReferenceProcessor();
+        processor.setMaxDepth(-1);
+        processor.setMapperFactory(new YamlObjectMapperFactory());
+        JsonNode node = processor.process(file);
+
+        ObjectMapper mapper = new ObjectMapper();
+        String json = mapper.writeValueAsString(node);
+
+        assertThat(json, equalTo(expected));
+    }
+
+    @Test
+    public void testProcessYamlFileWithNestedMixedTypeScopes() throws IOException, JsonReferenceException {
+
+        File file = resourceAsFile("nest-yaml.yaml");
         String expected = "{\"a\":3,\"b\":4,\"c\":{\"q\":{\"a\":3}},\"nest\":[{\"ok\":true,\"why\":{\"b\":4}},\"a\"],\"d\":{\"e\":{\"f\":3}},\"e\":3,\"f\":3,\"g\":{\"f\":3},\"h\":3}";
 
         JsonReferenceProcessor processor = new JsonReferenceProcessor();
