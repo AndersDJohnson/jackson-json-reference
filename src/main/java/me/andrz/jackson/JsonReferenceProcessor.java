@@ -238,7 +238,8 @@ public class JsonReferenceProcessor {
             referencedNode = read(absoluteReferencedUrl).at(ref.getPointer());
         }
 
-        referencedContext = context.child(absoluteReferencedUrl);
+        referencedContext = new JsonContext();
+        referencedContext.setUrl(absoluteReferencedUrl);
         referencedContext.setNode(referencedNode);
         referencedContext.setFactory(context.getFactory());
 
