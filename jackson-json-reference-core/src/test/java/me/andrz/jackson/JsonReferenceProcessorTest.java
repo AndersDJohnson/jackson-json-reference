@@ -228,6 +228,22 @@ public class JsonReferenceProcessorTest {
     }
 
     @Test
+    public void testProcessYamlFileWithSelfCircularity() throws IOException, JsonReferenceException {
+
+        File file = resourceAsFile("circular-self.yaml");
+        String expected = "{\"swagger\":\"2.0\",\"info\":{\"version\":\"0.0.0\",\"title\":\"API\"},\"paths\":{\"/api\":{\"post\":{\"parameters\":[{\"in\":\"body\",\"name\":\"foo\",\"schema\":{\"type\":\"object\",\"properties\":{\"foo\":{\"$ref\":\"#/definitions/foo\"}}}}],\"responses\":{\"200\":{\"description\":\"response\"}}}}},\"definitions\":{\"foo\":{\"type\":\"object\",\"properties\":{\"foo\":{\"type\":\"object\",\"properties\":{\"foo\":{\"$ref\":\"#/definitions/foo\"}}}}}}}";
+
+        JsonReferenceProcessor processor = new JsonReferenceProcessor();
+        processor.setMaxDepth(2);
+        JsonNode node = processor.process(file);
+
+        ObjectMapper mapper = new ObjectMapper();
+        String json = mapper.writeValueAsString(node);
+
+        assertThat(json, equalTo(expected));
+    }
+
+    @Test
     public void testDetectYamlFile() throws JsonReferenceException, IOException {
         File file = resourceAsFile("a.yaml");
         String expected = "{\"a\":3}";

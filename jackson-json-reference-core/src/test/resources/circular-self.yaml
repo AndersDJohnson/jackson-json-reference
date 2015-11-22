@@ -1,0 +1,26 @@
+###
+# https://gist.github.com/slavaschmidt/fe9fcab28437bee910c8
+# https://github.com/AndersDJohnson/jackson-json-reference/pull/15#issuecomment-158751987
+###
+---
+swagger: '2.0'
+info:
+  version: 0.0.0
+  title: API
+paths:
+  /api:
+    post:
+      parameters:
+        - in: body
+          name: foo
+          schema:
+            $ref: '#/definitions/foo'
+      responses:
+        200:
+          description: response
+definitions:
+  foo:
+    type: object
+    properties:
+      foo:
+        $ref: '#/definitions/foo'
