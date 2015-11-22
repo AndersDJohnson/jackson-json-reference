@@ -1,0 +1,17 @@
+paths:
+  /api:
+    post:
+      parameters:
+        - in: body
+          name: foo
+          schema:
+            $ref: '#/definitions/foo'
+definitions:
+  foo:
+    type: object
+    properties:
+      bar:
+        $ref: '#/definitions/bar'
+    bar:
+      type: string
+

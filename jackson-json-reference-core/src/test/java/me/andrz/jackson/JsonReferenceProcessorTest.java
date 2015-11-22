@@ -300,4 +300,55 @@ public class JsonReferenceProcessorTest {
         String expected = "{\"a\":3}";
         assertThat(json, equalTo(expected));
     }
+
+
+    @Test
+    public void testRefToRef() throws JsonReferenceException, IOException {
+        URL url = resourceAsURL("ref-to-ref.yaml");
+        String expected =
+            "{\n" +
+            "  \"paths\": {\n" +
+            "    \"/api\": {\n" +
+            "      \"post\": {\n" +
+            "        \"parameters\": [{\n" +
+            "          \"in\": \"body\",\n" +
+            "          \"name\": \"foo\",\n" +
+            "          \"schema\": {\n" +
+            "            \"type\": \"object\",\n" +
+            "            \"properties\": {\n" +
+            "              \"bar\": {\n" +
+            "                \"$ref\": \"#/definitions/bar\"\n" + // the reference here is not replaced
+            "              }\n" +
+            "            },\n" +
+            "            \"bar\": {\n" +
+            "              \"type\": \"string\"\n" +
+            "            }\n" +
+            "          }\n" +
+            "        }]\n" +
+            "      }\n" +
+            "    }\n" +
+            "  },\n" +
+            "  \"definitions\": {\n" +
+            "    \"foo\": {\n" +
+            "      \"type\": \"object\",\n" +
+            "      \"properties\": {\n" +
+            "        \"bar\": null\n" +  // the bar value is not correctly referenced here
+            "      },\n" +
+            "      \"bar\": {\n" +
+            "        \"type\": \"string\"\n" +
+            "      }\n" +
+            "    }\n" +
+            "  }\n" +
+            "}";
+
+        JsonReferenceProcessor processor = new JsonReferenceProcessor();
+        processor.setStopOnCircular(false);
+        JsonNode node = processor.process(url);
+
+        ObjectMapper mapper = new ObjectMapper();
+        String json = mapper.writeValueAsString(node);
+
+        assertThat(json, equalTo(expected.replaceAll("[\n\\s]","")));
+        fail("Please see comments to the expected result");
+    }
 }
