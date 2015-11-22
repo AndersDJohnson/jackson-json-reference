@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.node.MissingNode;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Set;
 
 /**
  * Represents a JSON node, its location (URL, file, etc) and a parent context if any
@@ -19,6 +20,7 @@ public class JsonContext {
     ObjectMapperFactory jf;
     private JsonNode document;
     private boolean isDocument;
+    private Set<JsonReference> processed;
 
     public JsonContext() {}
 
@@ -82,6 +84,14 @@ public class JsonContext {
 
     public void setUrl(URL url) {
         this.url = url;
+    }
+
+    public Set<JsonReference> getProcessed() {
+        return processed;
+    }
+
+    public void setProcessed(Set<JsonReference> processed) {
+        this.processed = processed;
     }
 
     /**
