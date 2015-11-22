@@ -110,7 +110,7 @@ public class JsonReferenceProcessor {
 //        System.out.println(contentType);
         String ext = FilenameUtils.getExtension(path);
         if ("yml".equals(ext) || "yaml".equals(ext)) {
-            return new YamlObjectMapperFactory();
+            return YamlObjectMapperFactory.instance;
         }
         return DefaultObjectMapperFactory.instance;
     }

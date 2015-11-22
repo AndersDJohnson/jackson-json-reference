@@ -201,7 +201,7 @@ public class JsonReferenceProcessorTest {
 
         JsonReferenceProcessor processor = new JsonReferenceProcessor();
         processor.setMaxDepth(-1);
-        processor.setMapperFactory(new YamlObjectMapperFactory());
+        processor.setMapperFactory(YamlObjectMapperFactory.instance);
         JsonNode node = processor.process(file);
 
         ObjectMapper mapper = new ObjectMapper();
@@ -218,7 +218,7 @@ public class JsonReferenceProcessorTest {
 
         JsonReferenceProcessor processor = new JsonReferenceProcessor();
         processor.setMaxDepth(-1);
-        processor.setMapperFactory(new YamlObjectMapperFactory());
+        processor.setMapperFactory(YamlObjectMapperFactory.instance);
         JsonNode node = processor.process(file);
 
         ObjectMapper mapper = new ObjectMapper();
