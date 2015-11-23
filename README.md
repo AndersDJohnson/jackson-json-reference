@@ -7,13 +7,13 @@ jackson-json-reference
 
 [JSON Reference] implementation for Java, based on [Jackson]. Process references in JSON documents, such as in [JSON Schema]. Aims for but not limited to full [spec](#specs) compliance.
 
-# Features
+## Features
 
 * Supports URLs & files.
 * Relative & absolute reference URIs.
 * Recursive expansion, with options for max depth and stop on circularity.
 
-# Specs
+## Specs
 
 * [JSON Reference]&nbsp;([extended by JSON Schema][JSON Reference Extended])
 * [JSON Pointer]
