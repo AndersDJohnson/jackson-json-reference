@@ -316,9 +316,7 @@ public class JsonReferenceProcessorTest {
             "          \"schema\": {\n" +
             "            \"type\": \"object\",\n" +
             "            \"properties\": {\n" +
-            "              \"bar\": {\n" +
-            "                \"$ref\": \"#/definitions/bar\"\n" + // the reference here is not replaced
-            "              }\n" +
+            "              \"bar\": null" + // the bar value is not correctly referenced here
             "            },\n" +
             "            \"bar\": {\n" +
             "              \"type\": \"string\"\n" +
@@ -343,6 +341,7 @@ public class JsonReferenceProcessorTest {
 
         JsonReferenceProcessor processor = new JsonReferenceProcessor();
         processor.setStopOnCircular(false);
+        processor.setMaxDepth(10);
         JsonNode node = processor.process(url);
 
         ObjectMapper mapper = new ObjectMapper();
