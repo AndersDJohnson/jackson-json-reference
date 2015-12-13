@@ -22,6 +22,17 @@
         <bintray.package>jackson-json-reference-cli</bintray.package>
     </properties>
 
+    <repositories>
+        <repository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>bintray-AndersDJohnson-maven</id>
+            <name>bintray</name>
+            <url>http://dl.bintray.com/AndersDJohnson/maven</url>
+        </repository>
+    </repositories>
+
     <scm>
         <connection>scm:git:https://github.com/${github.user}/${github.repo}.git</connection>
         <developerConnection>scm:git:git@github.com:${github.user}/${github.repo}.git</developerConnection>
