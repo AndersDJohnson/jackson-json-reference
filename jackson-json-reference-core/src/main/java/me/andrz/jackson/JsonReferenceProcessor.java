@@ -86,33 +86,14 @@ public class JsonReferenceProcessor {
 
     public JsonNode process(File file) throws JsonReferenceException, IOException {
         JsonContext context = new JsonContext(file);
-        context.setFactory(getFactoryForFile(file));
+        context.setFactory(someMapperFactory());
         return process(context);
     }
 
     public JsonNode process(URL url) throws JsonReferenceException, IOException {
         JsonContext context = new JsonContext(url);
-        context.setFactory(getFactoryForFile(url));
+        context.setFactory(someMapperFactory());
         return process(context);
-    }
-
-    public ObjectMapperFactory getFactoryForFile(File file) throws IOException {
-        return getFactoryForFile(file.getAbsolutePath());
-    }
-
-    public ObjectMapperFactory getFactoryForFile(URL url) throws IOException {
-        return getFactoryForFile(url.getPath());
-    }
-
-    public ObjectMapperFactory getFactoryForFile(String path) throws IOException {
-        // TOOD: Consider using file type detectors and MIME types.
-//        String contentType = Files.probeContentType(Paths.get(path));
-//        System.out.println(contentType);
-        String ext = FilenameUtils.getExtension(path);
-        if ("yml".equals(ext) || "yaml".equals(ext)) {
-            return YamlObjectMapperFactory.instance;
-        }
-        return DefaultObjectMapperFactory.instance;
     }
 
     public JsonNode process(JsonContext context, Set<JsonReference> processed) throws JsonReferenceException, IOException {
@@ -262,7 +243,7 @@ public class JsonReferenceProcessor {
         referencedContext = new JsonContext();
         referencedContext.setUrl(absoluteReferencedUrl);
         referencedContext.setNode(referencedNode);
-        referencedContext.setFactory(getFactoryForFile(absoluteReferencedUrl));
+        referencedContext.setFactory(someMapperFactory());
         referencedContext.setProcessed(new HashSet<JsonReference>(context.getProcessed()));
 
         return referencedContext;
@@ -276,7 +257,7 @@ public class JsonReferenceProcessor {
      * @return
      * @throws IOException
      */
-    public JsonNode get(JsonReference ref) throws IOException {
+    public JsonNode get(JsonReference ref) throws IOException, JsonReferenceException {
         JsonNode referencedNode;
 
         URI refUri = ref.getUri();
@@ -289,27 +270,43 @@ public class JsonReferenceProcessor {
 
     private ConcurrentHashMap<Object, JsonNode> cache = new ConcurrentHashMap<>(1);
 
-    public JsonNode read(URL url) throws IOException {
+    public JsonNode read(URL url) throws IOException, JsonReferenceException {
         putIntoCache(url);
         return cache.get(url);
     }
 
-    public JsonNode read(File file) throws IOException {
+    public JsonNode read(File file) throws IOException, JsonReferenceException {
         putIntoCache(file);
         return cache.get(file);
     }
 
     // can only be an URL or a File
-    private void putIntoCache(Object any) throws IOException {
+    private void putIntoCache(Object any) throws IOException, JsonReferenceException {
+        if (any == null) {
+            throw new JsonReferenceException("Cannot cache null object.");
+        }
         if (cacheInMemory && !cache.contains(any)) {
             logger.debug("Putting into the cache: " + any);
-            ObjectMapper mapper = someMapperFactory().create();
-            JsonNode tree = (any instanceof URL) ? mapper.readTree((URL) any) : mapper.readTree((File) any);
+            URL url;
+            if (any instanceof URL) {
+                url = (URL) any;
+            }
+            else if (any instanceof File) {
+                url = ((File) any).toURI().toURL();
+            }
+            else {
+                throw new JsonReferenceException("Unknown instance type for cache: " + any.getClass());
+            }
+            ObjectMapper mapper = someMapperFactory().create(url);
+            JsonNode tree = mapper.readTree(url);
+            if (tree == null) {
+                throw new JsonReferenceException("Cannot cache null mapped object.");
+            }
             cache.putIfAbsent(any, tree);
         }
     }
 
-    public JsonNode readFile(String fileString) throws IOException {
+    public JsonNode readFile(String fileString) throws IOException, JsonReferenceException {
         File file = new File(fileString);
         return read(file);
     }
