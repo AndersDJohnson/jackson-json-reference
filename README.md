@@ -81,8 +81,8 @@ mapper.writeValue(new File("out.json"), node);
 <dependencies>
     <dependency>
         <groupId>me.andrz.jackson</groupId>
-        <artifactId>jackson-json-reference</artifactId>
-        <version>0.1.0</version>
+        <artifactId>jackson-json-reference-core</artifactId>
+        <version>0.2.0</version>
     </dependency>
 </dependencies>
 ```
@@ -97,13 +97,15 @@ repositories {
 }
 
 dependencies {
-    compile 'me.andrz.jackson:jackson-json-reference:0.1.0'
+    compile 'me.andrz.jackson:jackson-json-reference-core:0.2.0'
 }
 ```
 
 ### Manual
 
-[Download JAR from BinTray][download].
+Download JAR(s) from BinTray:
+* [Core][download]
+* [CLI][download-cli]
 
 ## License
 
