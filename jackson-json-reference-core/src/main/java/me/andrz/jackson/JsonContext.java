@@ -43,14 +43,14 @@ public class JsonContext {
         this.url = url;
     }
     public JsonNode getDocument() throws IOException {
-        ObjectMapper mapper = getFactory().create();
+        ObjectMapper mapper = getFactory().create(url);
         document = mapper.readTree(url);
         return document;
     }
 
     public JsonNode getNode() throws IOException {
         if (node == null) {
-            ObjectMapper mapper = getFactory().create();
+            ObjectMapper mapper = getFactory().create(url);
             node = mapper.readTree(url);
         }
         return node;

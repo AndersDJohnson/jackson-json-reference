@@ -2,11 +2,10 @@ package me.andrz.jackson;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.net.URL;
+
 /**
  * Used to configure JsonContext and JsonReferenceProcessor
- *
- * @author slasch
- * @since 09.11.2015.
  */
 public interface ObjectMapperFactory {
 
@@ -15,5 +14,6 @@ public interface ObjectMapperFactory {
      *
      * @return configured {@link ObjectMapper}
      */
-    ObjectMapper create();
+    public ObjectMapper create(URL url);
+
 }
