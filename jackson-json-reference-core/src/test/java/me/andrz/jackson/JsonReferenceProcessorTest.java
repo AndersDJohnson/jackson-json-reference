@@ -218,6 +218,29 @@ public class JsonReferenceProcessorTest {
     }
 
     @Test
+    public void testExtendDefaultObjectMapperFeatures() throws IOException, JsonReferenceException {
+
+        File file = resourceAsFile("a.comment.json");
+        String expected = "{\"a\":3}";
+
+        JsonReferenceProcessor processor = new JsonReferenceProcessor();
+        processor.setMapperFactory(new ObjectMapperFactory() {
+            @Override
+            public ObjectMapper create(URL url) {
+                ObjectMapper objectMapper = DefaultObjectMapperFactory.instance.create(url);
+                objectMapper.configure(JsonParser.Feature.ALLOW_COMMENTS, true);
+                return objectMapper;
+            }
+        });
+        JsonNode node = processor.process(file);
+
+        ObjectMapper mapper = new ObjectMapper();
+        String json = mapper.writeValueAsString(node);
+
+        assertThat(json, equalTo(expected));
+    }
+
+    @Test
     public void testProcessNestedConflicts() throws IOException, JsonReferenceException {
 
         File file = resourceAsFile("nest-conflict.json");

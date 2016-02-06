@@ -48,6 +48,7 @@ processor.setMaxDepth(2); // default 1
 processor.setMapperFactory(new ObjectMapperFactory() {
    @Override
    public ObjectMapper create(URL url) {
+       //ObjectMapper objectMapper = DefaultObjectMapperFactory.instance.create(url);
        ObjectMapper objectMapper = new ObjectMapper();
        objectMapper.configure(JsonParser.Feature.ALLOW_COMMENTS, true);
        return objectMapper;
