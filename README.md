@@ -92,7 +92,7 @@ mapper.writeValue(new File("out.json"), node);
 ```gradle
 repositories {
     maven {
-        url  "https://dl.bintray.com/adjohnson916/maven" 
+        url 'https://dl.bintray.com/adjohnson916/maven'
     }
 }
 
