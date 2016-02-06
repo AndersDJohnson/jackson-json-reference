@@ -35,11 +35,21 @@ JsonNode node = (new JsonReferenceProcessor()).process(url);
 
 ### Settings
 ```java
-ObjectMapper mapper = new ObjectMapper();
+JsonReference processor = new JsonReferenceProcessor();
 
-JsonReference processor = new JsonReferenceProcessor(mapper);
 processor.setStopOnCircular(false); // default true
+
 processor.setMaxDepth(2); // default 1
+
+// Custom object mapper allowing comments.
+processor.setMapperFactory(new ObjectMapperFactory() {
+   @Override
+   public ObjectMapper create(URL url) {
+       ObjectMapper objectMapper = new ObjectMapper();
+       objectMapper.configure(JsonParser.Feature.ALLOW_COMMENTS, true);
+       return objectMapper;
+   }
+});
 
 JsonNode node = processor.process( /*...*/ );
 ```
