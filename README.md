@@ -13,6 +13,8 @@ CLI: [![Download CLI](https://api.bintray.com/packages/adjohnson916/maven/jackso
 * Supports URLs & files.
 * Relative & absolute reference URIs.
 * Recursive expansion, with options for max depth and stop on circularity.
+* Custom object mappers, allowing Jackson features like JSON comments, YAML, etc.
+* Built-in support for YAML based on file extension detection.
 
 ## Specs
 
