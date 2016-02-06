@@ -7,9 +7,6 @@ import java.net.URL;
 
 /**
  * ObjectMapperFactory which produces default ObjectMappers
- *
- * @author slasch
- * @since 09.11.2015.
  */
 public class DefaultObjectMapperFactory implements ObjectMapperFactory {
     private DefaultObjectMapperFactory() {}
