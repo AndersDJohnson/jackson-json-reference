@@ -3,7 +3,8 @@ jackson-json-reference
 
 [![Build Status](https://travis-ci.org/AndersDJohnson/jackson-json-reference.png)](https://travis-ci.org/AndersDJohnson/jackson-json-reference)
 [![Codecov](https://img.shields.io/codecov/c/github/AndersDJohnson/jackson-json-reference.svg)](http://codecov.io/github/AndersDJohnson/jackson-json-reference)
-[![Download](https://api.bintray.com/packages/AndersDJohnson/maven/jackson-json-reference/images/download.svg) ][download]
+Core: [![Download Core](https://api.bintray.com/packages/AndersDJohnson/maven/jackson-json-reference-core/images/download.svg) ][download]
+CLI: [![Download CLI](https://api.bintray.com/packages/AndersDJohnson/maven/jackson-json-reference-cli/images/download.svg) ][download-cli]
 
 [JSON Reference] implementation for Java, based on [Jackson]. Process references in JSON documents, such as in [JSON Schema]. Aims for but not limited to full [spec](#specs) compliance.
 
@@ -114,4 +115,5 @@ See [LICENSE](LICENSE).
 [JSON Pointer]: http://tools.ietf.org/html/rfc6901
 [JSON Schema]: http://json-schema.org/
 [JSON Schema Spec]: https://tools.ietf.org/html/draft-zyp-json-schema-04
-[download]: https://bintray.com/artifact/download/AndersDJohnson/maven/me/andrz/jackson/jackson-json-reference/0.1.0/jackson-json-reference-0.1.0.jar
+[download]: https://bintray.com/artifact/download/AndersDJohnson/maven/me/andrz/jackson/jackson-json-reference-core/0.2.0/jackson-json-reference-core-0.2.0.jar
+[download-cli]: https://bintray.com/artifact/download/AndersDJohnson/maven/me/andrz/jackson/jackson-json-reference-cli/0.2.0/jackson-json-reference-cli-0.2.0.jar
