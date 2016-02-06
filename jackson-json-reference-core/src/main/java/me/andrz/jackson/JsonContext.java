@@ -19,7 +19,6 @@ public class JsonContext {
     URL url;
     ObjectMapperFactory jf;
     private JsonNode document;
-    private boolean isDocument;
     private Set<JsonReference> processed;
 
     public JsonContext() {}
