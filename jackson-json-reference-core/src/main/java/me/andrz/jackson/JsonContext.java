@@ -19,7 +19,6 @@ public class JsonContext {
     URL url;
     ObjectMapperFactory jf;
     private JsonNode document;
-    private boolean isDocument;
     private Set<JsonReference> processed;
 
     public JsonContext() {}
@@ -44,14 +43,14 @@ public class JsonContext {
         this.url = url;
     }
     public JsonNode getDocument() throws IOException {
-        ObjectMapper mapper = getFactory().create();
+        ObjectMapper mapper = getFactory().create(url);
         document = mapper.readTree(url);
         return document;
     }
 
     public JsonNode getNode() throws IOException {
         if (node == null) {
-            ObjectMapper mapper = getFactory().create();
+            ObjectMapper mapper = getFactory().create(url);
             node = mapper.readTree(url);
         }
         return node;
@@ -102,19 +101,6 @@ public class JsonContext {
      */
     public JsonNode at(JsonPointer pointer) throws IOException {
         return getDocument().at(pointer);
-
-//        JsonNode optionalNode = node.at(pointer);
-//        boolean tryDocument = optionalNode == MissingNode.getInstance() && getDocument() != null;
-//        if (tryDocument) {
-//            JsonNode n = getDocument().at(pointer);
-//            return n;
-//        }
-//        else {
-//            return optionalNode.deepCopy();
-//        }
-
-//        boolean tryDocument = optionalNode == MissingNode.getInstance() && getDocument() != null;
-//        return  tryDocument ? getDocument().at(pointer) : optionalNode.deepCopy();
     }
 
 }

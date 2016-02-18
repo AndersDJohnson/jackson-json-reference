@@ -3,7 +3,8 @@ jackson-json-reference
 
 [![Build Status](https://travis-ci.org/adjohnson916/jackson-json-reference.png)](https://travis-ci.org/adjohnson916/jackson-json-reference)
 [![Codecov](https://img.shields.io/codecov/c/github/adjohnson916/jackson-json-reference.svg)](http://codecov.io/github/adjohnson916/jackson-json-reference)
-[![Download](https://api.bintray.com/packages/adjohnson916/maven/jackson-json-reference/images/download.svg) ][download]
+Core: [![Download Core](https://api.bintray.com/packages/adjohnson916/maven/jackson-json-reference-core/images/download.svg) ][download]
+CLI: [![Download CLI](https://api.bintray.com/packages/adjohnson916/maven/jackson-json-reference-cli/images/download.svg) ][download-cli]
 
 [JSON Reference] implementation for Java, based on [Jackson]. Process references in JSON documents, such as in [JSON Schema]. Aims for but not limited to full [spec](#specs) compliance.
 
@@ -12,6 +13,8 @@ jackson-json-reference
 * Supports URLs & files.
 * Relative & absolute reference URIs.
 * Recursive expansion, with options for max depth and stop on circularity.
+* Custom object mappers, allowing Jackson features like JSON comments, YAML, etc.
+* Built-in support for YAML based on file extension detection.
 
 ## Specs
 
@@ -35,11 +38,22 @@ JsonNode node = (new JsonReferenceProcessor()).process(url);
 
 ### Settings
 ```java
-ObjectMapper mapper = new ObjectMapper();
+JsonReference processor = new JsonReferenceProcessor();
 
-JsonReference processor = new JsonReferenceProcessor(mapper);
 processor.setStopOnCircular(false); // default true
+
 processor.setMaxDepth(2); // default 1
+
+// Custom object mapper allowing comments.
+processor.setMapperFactory(new ObjectMapperFactory() {
+   @Override
+   public ObjectMapper create(URL url) {
+       //ObjectMapper objectMapper = DefaultObjectMapperFactory.instance.create(url);
+       ObjectMapper objectMapper = new ObjectMapper();
+       objectMapper.configure(JsonParser.Feature.ALLOW_COMMENTS, true);
+       return objectMapper;
+   }
+});
 
 JsonNode node = processor.process( /*...*/ );
 ```
@@ -70,8 +84,8 @@ mapper.writeValue(new File("out.json"), node);
 <dependencies>
     <dependency>
         <groupId>me.andrz.jackson</groupId>
-        <artifactId>jackson-json-reference</artifactId>
-        <version>0.1.0</version>
+        <artifactId>jackson-json-reference-core</artifactId>
+        <version>0.2.0</version>
     </dependency>
 </dependencies>
 ```
@@ -81,18 +95,20 @@ mapper.writeValue(new File("out.json"), node);
 ```gradle
 repositories {
     maven {
-        url  "https://dl.bintray.com/adjohnson916/maven" 
+        url 'https://dl.bintray.com/adjohnson916/maven'
     }
 }
 
 dependencies {
-    compile 'me.andrz.jackson:jackson-json-reference:0.1.0'
+    compile 'me.andrz.jackson:jackson-json-reference-core:0.2.0'
 }
 ```
 
 ### Manual
 
-[Download JAR from BinTray][download].
+Download JAR(s) from BinTray:
+* [Core][download]
+* [CLI][download-cli]
 
 ## License
 
@@ -104,4 +120,5 @@ See [LICENSE](LICENSE).
 [JSON Pointer]: http://tools.ietf.org/html/rfc6901
 [JSON Schema]: http://json-schema.org/
 [JSON Schema Spec]: https://tools.ietf.org/html/draft-zyp-json-schema-04
-[download]: https://bintray.com/artifact/download/adjohnson916/maven/me/andrz/jackson/jackson-json-reference/0.1.0/jackson-json-reference-0.1.0.jar
+[download]: https://bintray.com/artifact/download/adjohnson916/maven/me/andrz/jackson/jackson-json-reference-core/0.2.0/jackson-json-reference-core-0.2.0.jar
+[download-cli]: https://bintray.com/artifact/download/adjohnson916/maven/me/andrz/jackson/jackson-json-reference-cli/0.2.0/jackson-json-reference-cli-0.2.0.jar

@@ -4,12 +4,12 @@
 
     <groupId>me.andrz.jackson</groupId>
     <artifactId>jackson-json-reference-core</artifactId>
-    <version>0.1.2-SNAPSHOT</version>
+    <version>0.2.1-SNAPSHOT</version>
 
     <parent>
         <groupId>me.andrz.jackson</groupId>
         <artifactId>jackson-json-reference</artifactId>
-        <version>0.1.2-SNAPSHOT</version>
+        <version>0.2.1-SNAPSHOT</version>
     </parent>
 
     <description>JSON Reference for Java with Jackson.</description>
@@ -21,6 +21,17 @@
         <bintray.repo>maven</bintray.repo>
         <bintray.package>jackson-json-reference-core</bintray.package>
     </properties>
+
+    <repositories>
+        <repository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>bintray-adjohnson916-maven</id>
+            <name>bintray</name>
+            <url>http://dl.bintray.com/adjohnson916/maven</url>
+        </repository>
+    </repositories>
 
     <scm>
         <connection>scm:git:https://github.com/${github.user}/${github.repo}.git</connection>
