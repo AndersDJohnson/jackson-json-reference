@@ -4,12 +4,12 @@
 
     <groupId>me.andrz.jackson</groupId>
     <artifactId>jackson-json-reference-core</artifactId>
-    <version>0.1.1-SNAPSHOT</version>
+    <version>0.1.2-SNAPSHOT</version>
 
     <parent>
         <groupId>me.andrz.jackson</groupId>
         <artifactId>jackson-json-reference</artifactId>
-        <version>0.1.1-SNAPSHOT</version>
+        <version>0.1.2-SNAPSHOT</version>
     </parent>
 
     <description>JSON Reference for Java with Jackson.</description>
