@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Represents a JSON node, its location (URL, file, etc) and a parent context if any
@@ -20,8 +21,11 @@ public class JsonContext {
     ObjectMapperFactory jf;
     private JsonNode document;
     private Set<JsonReference> processed;
+    private final int depth;
 
-    public JsonContext() {}
+    public JsonContext(int depth) {
+        this.depth = depth + 1;
+    }
 
     /**
      *
@@ -29,8 +33,8 @@ public class JsonContext {
      * @return
      * @throws IOException
      */
-    public JsonContext(File file) throws IOException {
-        this(file.toURI().toURL());
+    public JsonContext(File file, int depth) throws IOException {
+        this(file.toURI().toURL(), depth);
     }
 
     /**
@@ -39,9 +43,11 @@ public class JsonContext {
      * @return
      * @throws IOException
      */
-    public JsonContext(URL url) throws IOException {
+    public JsonContext(URL url, int depth) throws IOException {
         this.url = url;
+        this.depth = depth + 1;
     }
+
     public JsonNode getDocument() throws IOException {
         ObjectMapper mapper = getFactory().create(url);
         document = mapper.readTree(url);
@@ -103,4 +109,7 @@ public class JsonContext {
         return getDocument().at(pointer);
     }
 
+     public int getDepth() {
+        return depth;
+    }
 }

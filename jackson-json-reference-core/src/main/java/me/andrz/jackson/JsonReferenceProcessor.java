@@ -85,13 +85,13 @@ public class JsonReferenceProcessor {
     }
 
     public JsonNode process(File file) throws JsonReferenceException, IOException {
-        JsonContext context = new JsonContext(file);
+        JsonContext context = new JsonContext(file, 0);
         context.setFactory(someMapperFactory());
         return process(context);
     }
 
     public JsonNode process(URL url) throws JsonReferenceException, IOException {
-        JsonContext context = new JsonContext(url);
+        JsonContext context = new JsonContext(url, 0);
         context.setFactory(someMapperFactory());
         return process(context);
     }
@@ -126,7 +126,7 @@ public class JsonReferenceProcessor {
             return replacementNode;
         }
 
-        if (maxDepth >= 0 && context.getProcessed() != null && context.getProcessed().size() >= maxDepth) {
+        if (maxDepth >= 0 && context.getDepth() >= maxDepth) {
             return node;
         }
 
@@ -188,12 +188,16 @@ public class JsonReferenceProcessor {
         JsonReference absRef = getAbsoluteRef(ref, context);
         Set<JsonReference> processed = context.getProcessed();
 
-        if (stopOnCircular && processed.contains(absRef)) {
-            logger.debug("skipping on ref: " + absRef);
-            return null;
+        if (processed.contains(absRef)) {
+            if (stopOnCircular || context.getDepth() > maxDepth) {
+                logger.debug("skipping on ref: " + absRef);
+                return null;
+            }
+        } else {
+            // add ref to processed set for detection loop in recursion
+            processed.add(absRef);
         }
-        // add ref to processed set for detection loop in recursion
-        processed.add(absRef);
+
 
         JsonContext referencedContext = resolveFromContextToContext(ref, context);
 
@@ -210,8 +214,7 @@ public class JsonReferenceProcessor {
 
     public JsonReference getAbsoluteRef(JsonReference ref, JsonContext context) throws JsonReferenceException {
         String newRefString = context.getUrl().toString().split("#")[0] + "#" + ref.getPointer().toString();
-        JsonReference newRef = JsonReference.fromString(newRefString);
-        return newRef;
+        return JsonReference.fromString(newRefString);
     }
 
     public JsonContext resolveFromContextToContext(JsonReference ref, JsonContext context) throws IOException, JsonReferenceException {
@@ -240,7 +243,7 @@ public class JsonReferenceProcessor {
             referencedNode = read(absoluteReferencedUrl).at(ref.getPointer());
         }
 
-        referencedContext = new JsonContext();
+        referencedContext = new JsonContext(context.getDepth());
         referencedContext.setUrl(absoluteReferencedUrl);
         referencedContext.setNode(referencedNode);
         referencedContext.setFactory(someMapperFactory());
