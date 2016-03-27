@@ -38,7 +38,7 @@ JsonNode node = (new JsonReferenceProcessor()).process(url);
 
 ### Settings
 ```java
-JsonReference processor = new JsonReferenceProcessor();
+JsonReferenceProcessor processor = new JsonReferenceProcessor();
 
 processor.setStopOnCircular(false); // default true
 
