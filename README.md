@@ -1,10 +1,12 @@
 jackson-json-reference
 ==============
 
+[![Bintray](https://img.shields.io/badge/bintray-parent-green.svg)][bintray-parent]
 [![Build Status](https://travis-ci.org/AndersDJohnson/jackson-json-reference.png)](https://travis-ci.org/AndersDJohnson/jackson-json-reference)
 [![Codecov](https://img.shields.io/codecov/c/github/AndersDJohnson/jackson-json-reference.svg)](http://codecov.io/github/AndersDJohnson/jackson-json-reference)
-Core: [![Download Core](https://api.bintray.com/packages/AndersDJohnson/maven/jackson-json-reference-core/images/download.svg) ][download]
-CLI: [![Download CLI](https://api.bintray.com/packages/AndersDJohnson/maven/jackson-json-reference-cli/images/download.svg) ][download-cli]
+
+* [![Bintray Core](https://img.shields.io/badge/bintray-core-green.svg)][bintray-core] [![Download Core](https://api.bintray.com/packages/AndersDJohnson/maven/jackson-json-reference-core/images/download.svg) ][download]
+* [![Bintray CLI](https://img.shields.io/badge/bintray-cli-green.svg)][bintray-cli] [![Download CLI](https://api.bintray.com/packages/AndersDJohnson/maven/jackson-json-reference-cli/images/download.svg) ][download-cli]
 
 [JSON Reference] implementation for Java, based on [Jackson]. Process references in JSON documents, such as in [JSON Schema]. Aims for but not limited to full [spec](#specs) compliance.
 
@@ -122,3 +124,6 @@ See [LICENSE](LICENSE).
 [JSON Schema Spec]: https://tools.ietf.org/html/draft-zyp-json-schema-04
 [download]: https://bintray.com/artifact/download/AndersDJohnson/maven/me/andrz/jackson/jackson-json-reference-core/0.2.0/jackson-json-reference-core-0.2.0.jar
 [download-cli]: https://bintray.com/artifact/download/AndersDJohnson/maven/me/andrz/jackson/jackson-json-reference-cli/0.2.0/jackson-json-reference-cli-0.2.0.jar
+[bintray-parent]: https://bintray.com/AndersDJohnson/maven/jackson-json-reference
+[bintray-core]: https://bintray.com/AndersDJohnson/maven/jackson-json-reference-core
+[bintray-cli]: https://bintray.com/AndersDJohnson/maven/jackson-json-reference-cli
