@@ -1,0 +1,2 @@
+a:
+  $ref: "circular_ref_b.yaml#/b"

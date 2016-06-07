@@ -3,7 +3,6 @@ package me.andrz.jackson;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.*;
 import org.eclipse.jetty.server.*;
-import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.handler.*;
 import org.junit.*;
 import org.slf4j.Logger;
@@ -54,14 +53,12 @@ public class JsonReferenceProcessorTest {
 
         ResourceHandler resourceHandler = new ResourceHandler();
         resourceHandler.setDirectoriesListed(true);
-        resourceHandler.setResourceBase("src/test/resources");
+        resourceHandler.setResourceBase("src/test/resources/");
 
-        HandlerList handlers = new HandlerList();
-        handlers.setHandlers(new Handler[] { resourceHandler, new DefaultHandler() });
-        server.setHandler(handlers);
+        server.setHandler(resourceHandler);
 
         server.start();
-//        server.join();
+        server.setStopAtShutdown(true);
     }
 
     @AfterClass
@@ -73,9 +70,12 @@ public class JsonReferenceProcessorTest {
     public void testProcessFile() throws IOException, JsonReferenceException {
 
         File file = resourceAsFile("nest.json");
-        String expected = "{\"a\":3,\"b\":4,\"c\":{\"q\":{\"$ref\":\"a.json#\"}},\"nest\":[{\"ok\":\"yes\",\"why\":{\"b\":4}},\"a\"]}";
+        String expected = "{\"a\":3,\"b\":4,\"c\":{\"q\":{\"$ref\":\"a.json#\"}},\"nest\":[{\"ok\":\"yes\"," +
+                "\"why\":{\"b\":4}},\"a\"]}";
 
-        JsonNode node = (new JsonReferenceProcessor()).process(file);
+        JsonReferenceProcessor ref = new JsonReferenceProcessor();
+        ref.setMaxDepth(2);
+        JsonNode node = ref.process(file);
 
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(node);
@@ -83,13 +83,15 @@ public class JsonReferenceProcessorTest {
         assertThat(json, equalTo(expected));
     }
 
-//    @Ignore(IGNORE_OFFLINE)
+    //    @Ignore(IGNORE_OFFLINE)
     @Test
     public void testProcessFileWithRemote() throws IOException, JsonReferenceException {
 
         File file = resourceAsFile("remote.json");
 
-        JsonNode node = (new JsonReferenceProcessor()).process(file);
+        JsonReferenceProcessor ref = new JsonReferenceProcessor();
+        ref.setMaxDepth(2);
+        JsonNode node = ref.process(file);
 
         ObjectMapper mapper = new ObjectMapper();
 
@@ -102,7 +104,7 @@ public class JsonReferenceProcessorTest {
         assertThat(outFile.length(), greaterThan(JSON_SCHEMA_LENGTH));
     }
 
-//    @Ignore(IGNORE_OFFLINE)
+    //    @Ignore(IGNORE_OFFLINE)
     @Test
     public void testProcessFileWithRemoteCircularDeep() throws IOException, JsonReferenceException {
 
@@ -124,7 +126,7 @@ public class JsonReferenceProcessorTest {
         assertThat(outFile.length(), greaterThan(JSON_SCHEMA_LENGTH));
     }
 
-//    @Ignore(IGNORE_OFFLINE)
+    //    @Ignore(IGNORE_OFFLINE)
     @Test
     public void testProcessURLRemote() throws IOException, JsonReferenceException {
 
@@ -146,7 +148,9 @@ public class JsonReferenceProcessorTest {
 
         URL url = new URL("http://localhost:8080/ref.json");
 
-        JsonNode node = (new JsonReferenceProcessor()).process(url);
+        JsonReferenceProcessor ref = new JsonReferenceProcessor();
+        ref.setMaxDepth(2);
+        JsonNode node = ref.process(url);
 
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(node);
@@ -261,7 +265,8 @@ public class JsonReferenceProcessorTest {
     public void testProcessYamlFileWithNestedMixedTypeScopes() throws IOException, JsonReferenceException {
 
         File file = resourceAsFile("nest-yaml.yaml");
-        String expected = "{\"a\":3,\"b\":4,\"c\":{\"q\":{\"a\":3}},\"nest\":[{\"ok\":true,\"why\":{\"b\":4}},\"a\"],\"d\":{\"e\":{\"f\":3}},\"e\":3,\"f\":3,\"g\":{\"f\":3},\"h\":3}";
+        String expected = "{\"a\":3,\"b\":4,\"c\":{\"q\":{\"a\":3}},\"nest\":[{\"ok\":true,\"why\":" +
+                "{\"b\":4}},\"a\"],\"d\":{\"e\":{\"f\":3}},\"e\":3,\"f\":3,\"g\":{\"f\":3},\"h\":3}";
 
         JsonReferenceProcessor processor = new JsonReferenceProcessor();
         processor.setMaxDepth(-1);
@@ -278,7 +283,11 @@ public class JsonReferenceProcessorTest {
     public void testProcessYamlFileWithSelfCircularity() throws IOException, JsonReferenceException {
 
         File file = resourceAsFile("circular-self.yaml");
-        String expected = "{\"swagger\":\"2.0\",\"info\":{\"version\":\"0.0.0\",\"title\":\"API\"},\"paths\":{\"/api\":{\"post\":{\"parameters\":[{\"in\":\"body\",\"name\":\"foo\",\"schema\":{\"type\":\"object\",\"properties\":{\"foo\":{\"$ref\":\"#/definitions/foo\"}}}}],\"responses\":{\"200\":{\"description\":\"response\"}}}}},\"definitions\":{\"foo\":{\"type\":\"object\",\"properties\":{\"foo\":{\"type\":\"object\",\"properties\":{\"foo\":{\"$ref\":\"#/definitions/foo\"}}}}}}}";
+        String expected = "{\"swagger\":\"2.0\",\"info\":{\"version\":\"0.0.0\",\"title\":\"API\"},\"paths\":" +
+                "{\"/api\":{\"post\":{\"parameters\":[{\"in\":\"body\",\"name\":\"foo\",\"schema\":{\"type\":" +
+                "\"object\",\"properties\":{\"foo\":{\"$ref\":\"#/definitions/foo\"}}}}],\"responses\":{\"200\":" +
+                "{\"description\":\"response\"}}}}},\"definitions\":{\"foo\":{\"type\":\"object\",\"properties\":" +
+                "{\"foo\":{\"type\":\"object\",\"properties\":{\"foo\":{\"$ref\":\"#/definitions/foo\"}}}}}}}";
 
         JsonReferenceProcessor processor = new JsonReferenceProcessor();
         processor.setMaxDepth(2);
@@ -322,10 +331,13 @@ public class JsonReferenceProcessorTest {
     public void testPreserveReferences() throws IOException, JsonReferenceException {
 
         File file = resourceAsFile("nest.json");
-        String expected = "{\"a\":3,\"b\":4,\"c\":{\"q\":{\"$ref\":\"a.json#\"},\"x-$ref\":\"ref.json#\"},\"nest\":[{\"ok\":\"yes\",\"why\":{\"b\":4,\"x-$ref\":\"b.json#\"}},\"a\"]}";
+        String expected = "{\"a\":3,\"b\":4,\"c\":{\"q\":{\"$ref\":\"a.json#\"},\"x-$ref\":\"ref.json#\"}," +
+                "\"nest\":[{\"ok\":\"yes\",\"why\":{\"b\":4,\"x-$ref\":\"b.json#\"}},\"a\"]}";
 
         JsonReferenceProcessor processor = new JsonReferenceProcessor();
         processor.setPreserveRefs(true);
+        processor.setMaxDepth(2);
+
         JsonNode node = processor.process(file);
 
         ObjectMapper mapper = new ObjectMapper();
@@ -346,5 +358,92 @@ public class JsonReferenceProcessorTest {
 
         String expected = "{\"a\":3}";
         assertThat(json, equalTo(expected));
+    }
+
+
+    @Test
+    public void testRefToRef() throws JsonReferenceException, IOException {
+        URL url = resourceAsURL("ref-to-ref.yaml");
+        String expected =
+                "{\"paths\":" +
+                    "{\"/api\":" +
+                        "{\"post\":" +
+                        "   {\"parameters\":[" +
+                        "       {\"in\":\"body\",\"name\":\"foo\"," +
+                            "\"schema\":{\"type\":\"object\"," +
+                           "    \"properties\":{\"bar\":{\"type\":\"string\"}}}}]" +
+                "}}}," +
+                "\"definitions\":" +
+                    "{\"foo\":{\"type\":\"object\",\"properties\":{\"bar\":{\"type\":\"string\"}}}," +
+                    "\"bar\":{\"type\":\"string\"}}}";
+
+        JsonReferenceProcessor processor = new JsonReferenceProcessor();
+        processor.setStopOnCircular(false);
+        processor.setMaxDepth(10);
+        JsonNode node = processor.process(url);
+
+        ObjectMapper mapper = new ObjectMapper();
+        String json = mapper.writeValueAsString(node);
+
+        assertThat(json, equalTo(expected.replaceAll("[\n\\s]", "")));
+    }
+
+    @Test
+    public void bodyRefToRefRecursive() throws JsonReferenceException, IOException {
+        URL url = resourceAsURL("body_to_ref_recursive.yaml");
+        String expected10 = "{\"swagger\":\"2.0\",\"info\":{\"version\":\"0.0.0\",\"title\":\"API\"}," +
+                "\"paths\":{\"/api\":{\"post\":{\"parameters\":[{\"in\":\"body\",\"name\":\"foo\"," +
+                "\"schema\":{\"type\":\"object\",\"properties\":{\"foo\":{\"type\":\"object\"," +
+                "\"properties\":{\"foo\":{\"type\":\"object\",\"properties\":{\"foo\":{\"type\":" +
+                "\"object\",\"properties\":{\"foo\":{\"type\":\"object\",\"properties\":{\"foo\":" +
+                "{\"type\":\"object\",\"properties\":{\"foo\":{\"type\":\"object\",\"properties\":" +
+                "{\"foo\":{\"type\":\"object\",\"properties\":{\"foo\":{\"type\":\"object\"," +
+                "\"properties\":{\"foo\":{\"$ref\":\"#/definitions/foo\"}}}}}}}}}}}}}}}}}}}}]," +
+                "\"responses\":{\"200\":{\"description\":\"response\"}}}}},\"definitions\":" +
+                "{\"foo\":{\"type\":\"object\",\"properties\":{\"foo\":{\"type\":\"object\"," +
+                "\"properties\":{\"foo\":{\"type\":\"object\",\"properties\":{\"foo\":{\"type\":" +
+                "\"object\",\"properties\":{\"foo\":{\"type\":\"object\",\"properties\":{\"foo\":" +
+                "{\"type\":\"object\",\"properties\":{\"foo\":{\"type\":\"object\",\"properties\":" +
+                "{\"foo\":{\"type\":\"object\",\"properties\":{\"foo\":{\"type\":\"object\",\"properties\":" +
+                "{\"foo\":{\"type\":\"object\",\"properties\":{\"foo\":{\"$ref\":" +
+                "\"#/definitions/foo\"}}}}}}}}}}}}}}}}}}}}}}}";
+        String expected1 = "{\"swagger\":\"2.0\",\"info\":{\"version\":\"0.0.0\",\"title\":\"API\"}," +
+                "\"paths\":{\"/api\":{\"post\":{\"parameters\":[{\"in\":\"body\",\"name\":\"foo\"," +
+                "\"schema\":{\"$ref\":\"#/definitions/foo\"}}],\"responses\":{\"200\":{\"description\":" +
+                "\"response\"}}}}},\"definitions\":{\"foo\":{\"type\":\"object\",\"properties\":{\"foo\":" +
+                "{\"$ref\":\"#/definitions/foo\"}}}}}";
+
+        JsonReferenceProcessor processor = new JsonReferenceProcessor();
+        processor.setStopOnCircular(false);
+        processor.setMaxDepth(10);
+        JsonNode node = processor.process(url);
+
+        ObjectMapper mapper = new ObjectMapper();
+        String json = mapper.writeValueAsString(node);
+
+        assertThat(json, equalTo(expected10.replaceAll("[\n\\s]", "")));
+
+        processor.setMaxDepth(1);
+
+        JsonNode node1 = processor.process(url);
+        String json1 = mapper.writeValueAsString(node1);
+
+        assertThat(json1, equalTo(expected1.replaceAll("[\n\\s]", "")));
+    }
+
+    @Test
+    public void recursiveCrossFile() throws JsonReferenceException, IOException {
+        URL url = resourceAsURL("circular_ref_a.yaml");
+        String expected = "{\"a\":{\"$ref\":\"circular_ref_b.yaml#/b\"}}";
+
+        JsonReferenceProcessor processor = new JsonReferenceProcessor();
+        processor.setStopOnCircular(false);
+        processor.setMaxDepth(10);
+        JsonNode node = processor.process(url);
+
+        ObjectMapper mapper = new ObjectMapper();
+        String json = mapper.writeValueAsString(node);
+
+        assertThat(json, equalTo(expected.replaceAll("[\n\\s]", "")));
     }
 }
