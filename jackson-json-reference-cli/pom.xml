@@ -2,36 +2,53 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <name>jackson-json-reference-cli</name>
     <groupId>me.andrz.jackson</groupId>
     <artifactId>jackson-json-reference-cli</artifactId>
-    <version>0.2.1-SNAPSHOT</version>
+    <version>0.2.1</version>
+    <url>https://github.com/AndersDJohnson/jackson-json-reference</url>
+    <description>JSON Reference for Java with Jackson.</description>
 
     <parent>
         <groupId>me.andrz.jackson</groupId>
         <artifactId>jackson-json-reference</artifactId>
-        <version>0.2.1-SNAPSHOT</version>
+        <version>0.2.1</version>
     </parent>
-
-    <description>JSON Reference for Java with Jackson.</description>
 
     <properties>
         <github.user>AndersDJohnson</github.user>
         <github.repo>jackson-json-reference</github.repo>
-        <bintray.user>AndersDJohnson</bintray.user>
-        <bintray.repo>maven</bintray.repo>
-        <bintray.package>jackson-json-reference-cli</bintray.package>
     </properties>
 
-    <repositories>
-        <repository>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <id>bintray-AndersDJohnson-maven</id>
-            <name>bintray</name>
-            <url>http://dl.bintray.com/AndersDJohnson/maven</url>
-        </repository>
-    </repositories>
+    <developers>
+        <developer>
+            <id>AndersDJohnson</id>
+            <name>Anders D. Johnson</name>
+            <url>https://andrz.me</url>
+            <email>anders.d.johnson.developer@gmail.com</email>
+            <roles>
+                <role>developer</role>
+            </roles>
+            <timezone>America/Chicago</timezone>
+            <properties>
+                <picUrl>https://www.gravatar.com/avatar/5c44acedb08657aa1bdfc5524e71ff53</picUrl>
+            </properties>
+        </developer>
+    </developers>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+            <comments>A business-friendly OSS license</comments>
+        </license>
+        <license>
+            <name>GNU Lesser General Public License (LGPL), Version 3.0</name>
+            <url>http://www.fsf.org/licensing/licenses/lgpl.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
 
     <scm>
         <connection>scm:git:https://github.com/${github.user}/${github.repo}.git</connection>
@@ -41,9 +58,13 @@
     </scm>
 
     <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
         <repository>
-            <id>bintray</id>
-            <url>https://api.bintray.com/maven/${bintray.user}/${bintray.repo}/${bintray.package}</url>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
     </distributionManagement>
 
@@ -83,6 +104,33 @@
                     <testSource>1.7</testSource>
                     <testTarget>1.7</testTarget>
                 </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.4</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.10.3</version>
+                <configuration>
+                    <failOnError>false</failOnError>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <artifactId>maven-release-plugin</artifactId>
@@ -187,6 +235,42 @@
                             </execution>
                         </executions>
                     </plugin>
+                    <plugin>
+                        <artifactId>maven-release-plugin</artifactId>
+                        <version>2.5.3</version>
+                        <configuration>
+                            <useReleaseProfile>false</useReleaseProfile>
+                            <releaseProfiles>release</releaseProfiles>
+                            <autoVersionSubmodules>true</autoVersionSubmodules>
+                            <pushChanges>false</pushChanges>
+                            <localCheckout>true</localCheckout>
+                            <goals>deploy</goals>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.6</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <version>1.6.7</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <serverId>ossrh</serverId>
+                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                        </configuration>
+                    </plugin>
                 </plugins>
             </build>
         </profile>
@@ -211,7 +295,7 @@
         <dependency>
             <groupId>me.andrz.jackson</groupId>
             <artifactId>jackson-json-reference-core</artifactId>
-            <version>0.2.1-SNAPSHOT</version>
+            <version>0.2.1</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
