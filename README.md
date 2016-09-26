@@ -1,12 +1,12 @@
 jackson-json-reference
 ==============
 
-[![Bintray](https://img.shields.io/badge/bintray-parent-green.svg)][bintray-parent]
+Parent:
 [![Build Status](https://travis-ci.org/AndersDJohnson/jackson-json-reference.png)](https://travis-ci.org/AndersDJohnson/jackson-json-reference)
 [![Codecov](https://img.shields.io/codecov/c/github/AndersDJohnson/jackson-json-reference.svg)](http://codecov.io/github/AndersDJohnson/jackson-json-reference)
 
-* [![Bintray Core](https://img.shields.io/badge/bintray-core-green.svg)][bintray-core] [![Download Core](https://api.bintray.com/packages/AndersDJohnson/maven/jackson-json-reference-core/images/download.svg) ][download]
-* [![Bintray CLI](https://img.shields.io/badge/bintray-cli-green.svg)][bintray-cli] [![Download CLI](https://api.bintray.com/packages/AndersDJohnson/maven/jackson-json-reference-cli/images/download.svg) ][download-cli]
+* Core:&nbsp;[![Download Core](https://img.shields.io/maven-central/v/me.andrz.jackson/jackson-json-reference-core.svg) ][download]
+* CLI:&nbsp;&nbsp;&nbsp;[![Download CLI](https://img.shields.io/maven-central/v/me.andrz.jackson/jackson-json-reference-cli.svg) ][download-cli]
 
 [JSON Reference] implementation for Java, based on [Jackson]. Process references in JSON documents, such as in [JSON Schema]. Aims for but not limited to full [spec](#specs) compliance.
 
@@ -72,22 +72,11 @@ mapper.writeValue(new File("out.json"), node);
 ### Maven
 
 ```xml
-<repositories>
-    <repository>
-        <snapshots>
-            <enabled>false</enabled>
-        </snapshots>
-        <id>bintray-AndersDJohnson-maven</id>
-        <name>bintray-AndersDJohnson-maven</name>
-        <url>https://dl.bintray.com/AndersDJohnson/maven</url>
-    </repository>
-</repositories>
-
 <dependencies>
     <dependency>
         <groupId>me.andrz.jackson</groupId>
         <artifactId>jackson-json-reference-core</artifactId>
-        <version>0.2.0</version>
+        <version>0.2.1</version>
     </dependency>
 </dependencies>
 ```
@@ -96,21 +85,19 @@ mapper.writeValue(new File("out.json"), node);
 
 ```gradle
 repositories {
-    maven {
-        url 'https://dl.bintray.com/AndersDJohnson/maven'
-    }
+    mavenCentral()
 }
 
 dependencies {
-    compile 'me.andrz.jackson:jackson-json-reference-core:0.2.0'
+    compile 'me.andrz.jackson:jackson-json-reference-core:0.2.1'
 }
 ```
 
 ### Manual
 
-Download JAR(s) from BinTray:
-* [Core][download]
-* [CLI][download-cli]
+Download JAR(s) from Maven Central:
+* Core:&nbsp;[![Download Core](https://img.shields.io/maven-central/v/me.andrz.jackson/jackson-json-reference-core.svg) ][download]
+* CLI:&nbsp;&nbsp;&nbsp;[![Download CLI](https://img.shields.io/maven-central/v/me.andrz.jackson/jackson-json-reference-cli.svg) ][download-cli]
 
 ## License
 
@@ -122,8 +109,5 @@ See [LICENSE](LICENSE).
 [JSON Pointer]: http://tools.ietf.org/html/rfc6901
 [JSON Schema]: http://json-schema.org/
 [JSON Schema Spec]: https://tools.ietf.org/html/draft-zyp-json-schema-04
-[download]: https://bintray.com/artifact/download/AndersDJohnson/maven/me/andrz/jackson/jackson-json-reference-core/0.2.0/jackson-json-reference-core-0.2.0.jar
-[download-cli]: https://bintray.com/artifact/download/AndersDJohnson/maven/me/andrz/jackson/jackson-json-reference-cli/0.2.0/jackson-json-reference-cli-0.2.0.jar
-[bintray-parent]: https://bintray.com/AndersDJohnson/maven/jackson-json-reference
-[bintray-core]: https://bintray.com/AndersDJohnson/maven/jackson-json-reference-core
-[bintray-cli]: https://bintray.com/AndersDJohnson/maven/jackson-json-reference-cli
+[download]: https://repo1.maven.org/maven2/me/andrz/jackson/jackson-json-reference-core/0.2.1/jackson-json-reference-core-0.2.1.jar
+[download-cli]: https://repo1.maven.org/maven2/me/andrz/jackson/jackson-json-reference-cli/0.2.1/jackson-json-reference-cli-0.2.1.jar
