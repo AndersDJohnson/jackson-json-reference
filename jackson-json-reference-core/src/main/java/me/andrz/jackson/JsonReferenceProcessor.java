@@ -253,9 +253,10 @@ public class JsonReferenceProcessor {
      * Resolve with defaults.
      * - Assumes ref points to absolute URL.
      *
-     * @param ref
-     * @return
-     * @throws IOException
+     * @param ref ref to absolute URL
+     * @return node node
+     * @throws IOException on invalid ref (URL or file)
+     * @throws JsonReferenceException on invalid ref
      */
     public JsonNode get(JsonReference ref) throws IOException, JsonReferenceException {
         JsonNode referencedNode;
