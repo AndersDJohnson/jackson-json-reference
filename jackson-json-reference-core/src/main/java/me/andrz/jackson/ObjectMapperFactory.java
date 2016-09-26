@@ -12,6 +12,7 @@ public interface ObjectMapperFactory {
     /**
      * Creates configured {@link ObjectMapper}
      *
+     * @param url URL
      * @return configured {@link ObjectMapper}
      */
     public ObjectMapper create(URL url);

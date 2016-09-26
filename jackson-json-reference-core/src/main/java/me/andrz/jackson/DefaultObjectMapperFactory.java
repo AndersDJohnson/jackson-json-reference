@@ -11,6 +11,11 @@ import java.net.URL;
 public class DefaultObjectMapperFactory implements ObjectMapperFactory {
     private DefaultObjectMapperFactory() {}
 
+    /**
+     *
+     * @param url URL
+     * @return object mapper
+     */
     @Override
     public ObjectMapper create(URL url) {
         ObjectMapperFactory factory = factoryForURL(url);

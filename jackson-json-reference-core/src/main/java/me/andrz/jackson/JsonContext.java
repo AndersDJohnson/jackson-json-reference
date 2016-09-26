@@ -25,9 +25,8 @@ public class JsonContext {
 
     /**
      *
-     * @param file
-     * @return
-     * @throws IOException
+     * @param file File
+     * @throws IOException on invalid file
      */
     public JsonContext(File file) throws IOException {
         this(file.toURI().toURL());
@@ -35,11 +34,9 @@ public class JsonContext {
 
     /**
      *
-     * @param url
-     * @return
-     * @throws IOException
+     * @param url URL
      */
-    public JsonContext(URL url) throws IOException {
+    public JsonContext(URL url) {
         this.url = url;
     }
     public JsonNode getDocument() throws IOException {
@@ -59,15 +56,16 @@ public class JsonContext {
     /**
      * The {@factory} is used to create ObjectMapper instances
      * If not defined, default will be used
-     * @param factory
+     *
+     * @param factory factory
      */
     public void setFactory(ObjectMapperFactory factory) {
         jf = factory;
     }
 
     /**
-     * Returns user defined ObjectMapperFactory, if one was set or {@DefaultObjectMapperFactory}
-     * @return
+     * Returns user defined ObjectMapperFactory, if one was set or {@link DefaultObjectMapperFactory}
+     * @return object mapper factory
      */
     public ObjectMapperFactory getFactory() {
         return jf == null ? DefaultObjectMapperFactory.instance : jf;
@@ -96,8 +94,9 @@ public class JsonContext {
     /**
      * Look up a node including on document if needed
      *
-     * @param pointer
-     * @return
+     * @param pointer pointer
+     * @return node
+     * @throws IOException on getting document
      */
     public JsonNode at(JsonPointer pointer) throws IOException {
         return getDocument().at(pointer);
