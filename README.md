@@ -44,7 +44,7 @@ JsonReferenceProcessor processor = new JsonReferenceProcessor();
 
 processor.setStopOnCircular(false); // default true
 
-processor.setMaxDepth(2); // default 1
+processor.setMaxDepth(2); // default 1, or set to -1 for no max depth
 
 // Custom object mapper allowing comments.
 processor.setMapperFactory(new ObjectMapperFactory() {
