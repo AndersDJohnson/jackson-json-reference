@@ -11,7 +11,7 @@ import java.net.URL;
 import java.util.Set;
 
 /**
- * Represents a JSON node, its location (URL, file, etc) and a parent context if any
+ * Represents a JSON node, its location (URL, file, etc.), and a parent context, if any.
  */
 public class JsonContext {
 
