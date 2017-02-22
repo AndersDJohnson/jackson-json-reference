@@ -78,12 +78,13 @@ public class JsonReference {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == this) return true;
+        if (o == null) return false;
+        if (o.getClass() != getClass()) return false;
 
         JsonReference jsonRef = (JsonReference) o;
 
-        if (uri != null ? !uri.equals(jsonRef.uri) : jsonRef.uri != null) return false;
+        if (uri == null ? jsonRef.uri != null : !uri.equals(jsonRef.uri)) return false;
 
         return true;
     }
