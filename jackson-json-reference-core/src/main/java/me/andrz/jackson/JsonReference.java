@@ -34,9 +34,11 @@ public class JsonReference {
          * Remove any extraneous path segments, especially to make semantically empty paths really empty.
          */
         uri = uri.normalize();
+        
+        String path = uri.getPath();
 
         absolute = uri.isAbsolute();
-        local = ! uri.isAbsolute() && "".equals(uri.getPath());
+        local = !absolute && (path == null || path.isEmpty());
 
         this.uri = uri;
         this.pointer = pointer;
