@@ -32,6 +32,8 @@ public class JsonReferenceProcessor {
     private int maxDepth = 1;
     private boolean stopOnCircular = true;
     private boolean preserveRefs = false;
+    private boolean preserveLocalRefs = false;
+    private boolean preserveExternalRefs = false;
     private boolean cacheInMemory = true;
     private String refPrefix = "x-$ref";
     private ObjectMapperFactory mapperFactory;
@@ -64,7 +66,33 @@ public class JsonReferenceProcessor {
         this.preserveRefs = preserveRefs;
     }
 
-    public String getRefPrefix() {
+    public boolean isPreserveLocalRefs() {
+		return preserveLocalRefs;
+	}
+
+    /**
+     * If set local references (to other places within the same file) are not resolved and will stay as is.
+     * 
+     * @param preserveLocalRefs Preserve local references
+     */
+	public void setPreserveLocalRefs(boolean preserveLocalRefs) {
+		this.preserveLocalRefs = preserveLocalRefs;
+	}
+
+	public boolean isPreserveExternalRefs() {
+		return preserveExternalRefs;
+	}
+
+    /**
+     * If set external references (to other files) are not resolved and will stay as is.
+     * 
+     * @param preserveExternalRefs Preserve external references
+     */
+	public void setPreserveExternalRefs(boolean preserveExternalRefs) {
+		this.preserveExternalRefs = preserveExternalRefs;
+	}
+
+	public String getRefPrefix() {
         return refPrefix;
     }
 
@@ -187,6 +215,10 @@ public class JsonReferenceProcessor {
         JsonReference ref = refNode.getJsonReference();
         JsonReference absRef = getAbsoluteRef(ref, context);
         Set<JsonReference> processed = context.getProcessed();
+
+        if((preserveLocalRefs && ref.isLocal()) || (preserveExternalRefs && !ref.isLocal())) {
+            return node;
+        }
 
         if (stopOnCircular && processed.contains(absRef)) {
             logger.debug("skipping on ref: " + absRef);
