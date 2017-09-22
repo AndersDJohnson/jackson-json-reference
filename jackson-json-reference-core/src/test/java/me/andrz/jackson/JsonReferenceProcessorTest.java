@@ -347,4 +347,32 @@ public class JsonReferenceProcessorTest {
         String expected = "{\"a\":3}";
         assertThat(json, equalTo(expected));
     }
+    
+    @Test
+    public void testReplaceNoLocaleReferences() throws IOException, JsonReferenceException {
+    	File file = resourceAsFile("local-and-external.json");
+
+        JsonReferenceProcessor processor = new JsonReferenceProcessor();
+        processor.setPreserveLocalRefs(true);
+        JsonNode node = processor.process(file);
+    	
+    	String json = new ObjectMapper().writeValueAsString(node);
+    	
+    	String expected = "{\"a\":{\"a\":3},\"b\":{\"$ref\":\"#/c\"},\"c\":\"d\"}";
+    	assertThat(json, equalTo(expected));
+    }
+    
+    @Test
+    public void testReplaceNoExternalReferences() throws IOException, JsonReferenceException {
+    	File file = resourceAsFile("local-and-external.json");
+
+        JsonReferenceProcessor processor = new JsonReferenceProcessor();
+        processor.setPreserveExternalRefs(true);
+        JsonNode node = processor.process(file);
+    	
+    	String json = new ObjectMapper().writeValueAsString(node);
+    	
+    	String expected = "{\"a\":{\"$ref\":\"a.json\"},\"b\":\"d\",\"c\":\"d\"}";
+    	assertThat(json, equalTo(expected));
+    }
 }
