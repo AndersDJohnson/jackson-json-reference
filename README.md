@@ -101,7 +101,7 @@ Download JAR(s) from Maven Central:
 
 ## License
 
-See [LICENSE](LICENSE).r
+See [LICENSE](LICENSE).
 
 ## Development
 
@@ -153,4 +153,4 @@ mvn release:perform
 [JSON Schema]: http://json-schema.org/
 [JSON Schema Spec]: https://tools.ietf.org/html/draft-zyp-json-schema-04
 [download]: https://repo1.maven.org/maven2/me/andrz/jackson/jackson-json-reference-core/0.3.0/jackson-json-reference-core-0.3.0.jar
-[download-cli]: https://repo1.maven.org/maven2/me/andrz/jackson/jackson-json-reference-cli/0.3.0/jackson-json-reference-cli-0.3.0.ja
+[download-cli]: https://repo1.maven.org/maven2/me/andrz/jackson/jackson-json-reference-cli/0.3.0/jackson-json-reference-cli-0.3.0.jar
