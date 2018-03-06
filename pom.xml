@@ -7,7 +7,7 @@
     <artifactId>jackson-json-reference</artifactId>
     <version>0.3.0-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <url>https://github.com/adjohnson916/jackson-json-reference</url>
+    <url>https://github.com/AndersDJohnson/jackson-json-reference</url>
     <description>JSON Reference for Java with Jackson.</description>
 
     <modules>
@@ -16,13 +16,13 @@
     </modules>
 
     <properties>
-        <github.user>adjohnson916</github.user>
+        <github.user>AndersDJohnson</github.user>
         <github.repo>jackson-json-reference</github.repo>
     </properties>
 
     <developers>
         <developer>
-            <id>adjohnson916</id>
+            <id>AndersDJohnson</id>
             <name>Anders D. Johnson</name>
             <url>https://andrz.me</url>
             <email>anders.d.johnson.developer@gmail.com</email>

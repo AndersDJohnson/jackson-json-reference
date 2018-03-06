@@ -2,8 +2,8 @@ jackson-json-reference
 ==============
 
 Parent:
-[![Build Status](https://travis-ci.org/adjohnson916/jackson-json-reference.png)](https://travis-ci.org/adjohnson916/jackson-json-reference)
-[![Codecov](https://img.shields.io/codecov/c/github/adjohnson916/jackson-json-reference.svg)](http://codecov.io/github/adjohnson916/jackson-json-reference)
+[![Build Status](https://travis-ci.org/AndersDJohnson/jackson-json-reference.png)](https://travis-ci.org/AndersDJohnson/jackson-json-reference)
+[![Codecov](https://img.shields.io/codecov/c/github/AndersDJohnson/jackson-json-reference.svg)](http://codecov.io/github/AndersDJohnson/jackson-json-reference)
 
 * Core:&nbsp;[![Download Core](https://img.shields.io/maven-central/v/me.andrz.jackson/jackson-json-reference-core.svg) ][download]
 * CLI:&nbsp;&nbsp;&nbsp;[![Download CLI](https://img.shields.io/maven-central/v/me.andrz.jackson/jackson-json-reference-cli.svg) ][download-cli]
