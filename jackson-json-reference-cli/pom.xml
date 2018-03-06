@@ -5,14 +5,14 @@
     <name>jackson-json-reference-cli</name>
     <groupId>me.andrz.jackson</groupId>
     <artifactId>jackson-json-reference-cli</artifactId>
-    <version>0.2.1</version>
+    <version>0.3.0-SNAPSHOT</version>
     <url>https://github.com/AndersDJohnson/jackson-json-reference</url>
     <description>JSON Reference for Java with Jackson.</description>
 
     <parent>
         <groupId>me.andrz.jackson</groupId>
         <artifactId>jackson-json-reference</artifactId>
-        <version>0.2.1</version>
+        <version>0.3.0-SNAPSHOT</version>
     </parent>
 
     <properties>
@@ -295,7 +295,7 @@
         <dependency>
             <groupId>me.andrz.jackson</groupId>
             <artifactId>jackson-json-reference-core</artifactId>
-            <version>0.2.1</version>
+            <version>0.3.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
