@@ -101,7 +101,50 @@ Download JAR(s) from Maven Central:
 
 ## License
 
-See [LICENSE](LICENSE).
+See [LICENSE](LICENSE).r
+
+## Development
+
+### Publishing
+
+* http://central.sonatype.org/pages/ossrh-guide.html
+* http://central.sonatype.org/pages/apache-maven.html#performing-a-release-deployment-with-the-maven-release-plugin
+* https://oss.sonatype.org/#nexus-search;quick~jackson-json-reference
+* https://search.maven.org/#search%7Cga%7C1%7Cjackson-json-reference
+
+If you need to bump the version of all projects in the multi-project:
+
+```
+mvn versions:set -DnewVersion=2.50.1-SNAPSHOT
+```
+
+Then be sure your build is up to date:
+
+```
+mvn compile
+```
+
+Now, use the Release Plugin (http://maven.apache.org/maven-release/maven-release-plugin/usage.html):
+
+```
+mvn release:prepare -DdryRun=true
+```
+
+```
+mvn release:prepare
+```
+
+If you mess up:
+
+```
+mvn release:clean
+```
+
+Else:
+
+```
+mvn release:perform
+```
 
 [Jackson]: https://github.com/FasterXML/jackson
 [JSON Reference]: https://tools.ietf.org/html/draft-pbryan-zyp-json-ref-03
@@ -110,4 +153,4 @@ See [LICENSE](LICENSE).
 [JSON Schema]: http://json-schema.org/
 [JSON Schema Spec]: https://tools.ietf.org/html/draft-zyp-json-schema-04
 [download]: https://repo1.maven.org/maven2/me/andrz/jackson/jackson-json-reference-core/0.3.0/jackson-json-reference-core-0.3.0.jar
-[download-cli]: https://repo1.maven.org/maven2/me/andrz/jackson/jackson-json-reference-cli/0.3.0/jackson-json-reference-cli-0.3.0.jar
+[download-cli]: https://repo1.maven.org/maven2/me/andrz/jackson/jackson-json-reference-cli/0.3.0/jackson-json-reference-cli-0.3.0.ja
