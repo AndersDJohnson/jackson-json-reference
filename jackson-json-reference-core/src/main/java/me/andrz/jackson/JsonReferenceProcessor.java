@@ -172,6 +172,7 @@ public class JsonReferenceProcessor {
                     JsonNode replacementNode = getReplacementNode(subNode, context);
                     if (replacementNode == null) {
                         logger.info("Got null replacement node on position " + i);
+                        ++i;
                         continue;
                     }
                     logger.debug("replacing " + "subNode" + " with " + replacementNode);
