@@ -1,13 +1,10 @@
 package me.andrz.jackson;
 
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.MissingNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
-import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -176,10 +173,11 @@ public class JsonReferenceProcessor {
                     }
                     logger.debug("replacing " + "subNode" + " with " + replacementNode);
                     arrayNode.set(i, replacementNode);
-                    ++i;
+                   
                 } else {
                     process(context, subNode);
                 }
+                 ++i;
             }
         } else if (node.isObject()) {
             ObjectNode objectNode = (ObjectNode) node;

@@ -375,4 +375,17 @@ public class JsonReferenceProcessorTest {
     	String expected = "{\"a\":{\"$ref\":\"a.json\"},\"b\":\"d\",\"c\":\"d\"}";
     	assertThat(json, equalTo(expected));
     }
+
+    @Test
+    public void testReplaceReferencesInArray() throws IOException, JsonReferenceException {
+    	File file = resourceAsFile("array.json");
+
+        JsonReferenceProcessor processor = new JsonReferenceProcessor();
+        JsonNode node = processor.process(file);
+
+    	String json = new ObjectMapper().writeValueAsString(node);
+
+    	String expected = "[{\"a\":\"a\"},{\"b\":4},{\"c\":\"d\"},{\"c\":\"d\"}]";
+    	assertThat(json, equalTo(expected));
+    }
 }
