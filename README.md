@@ -152,5 +152,5 @@ mvn release:perform
 [JSON Pointer]: http://tools.ietf.org/html/rfc6901
 [JSON Schema]: http://json-schema.org/
 [JSON Schema Spec]: https://tools.ietf.org/html/draft-zyp-json-schema-04
-[download]: https://repo1.maven.org/maven2/me/andrz/jackson/jackson-json-reference-core/0.3.0/jackson-json-reference-core-0.3.0.jar
-[download-cli]: https://repo1.maven.org/maven2/me/andrz/jackson/jackson-json-reference-cli/0.3.0/jackson-json-reference-cli-0.3.0.jar
+[download]: https://repo1.maven.org/maven2/me/andrz/jackson/jackson-json-reference-core/0.3.0/jackson-json-reference-core-0.3.1.jar
+[download-cli]: https://repo1.maven.org/maven2/me/andrz/jackson/jackson-json-reference-cli/0.3.0/jackson-json-reference-cli-0.3.1.jar
