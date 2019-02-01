@@ -76,7 +76,7 @@ mapper.writeValue(new File("out.json"), node);
     <dependency>
         <groupId>me.andrz.jackson</groupId>
         <artifactId>jackson-json-reference-core</artifactId>
-        <version>0.3.0</version>
+        <version>0.3.1</version>
     </dependency>
 </dependencies>
 ```
@@ -89,7 +89,7 @@ repositories {
 }
 
 dependencies {
-    compile 'me.andrz.jackson:jackson-json-reference-core:0.3.0'
+    compile 'me.andrz.jackson:jackson-json-reference-core:0.3.1'
 }
 ```
 
