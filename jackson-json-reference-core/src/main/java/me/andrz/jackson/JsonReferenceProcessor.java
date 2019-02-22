@@ -142,12 +142,12 @@ public class JsonReferenceProcessor {
             context.setProcessed(new HashSet<JsonReference>());
         }
 
-        logger.trace("processed: " + context.getProcessed());
+        logger.trace("processed: {}", context.getProcessed());
 
         // Check if the whole node must be replaced
         if (JsonReferenceNode.is(node)) {
             JsonNode replacementNode = getReplacementNode(node, context);
-            logger.debug("replacing whole node with" + replacementNode);
+            logger.debug("replacing whole node with {}", replacementNode);
             return replacementNode;
         }
 
@@ -162,16 +162,16 @@ public class JsonReferenceProcessor {
             while (elements.hasNext()) {
                 JsonNode subNode = elements.next();
 
-                logger.trace("i=" + i);
+                logger.trace("i={}", i);
 
                 if (JsonReferenceNode.is(subNode)) {
 
                     JsonNode replacementNode = getReplacementNode(subNode, context);
                     if (replacementNode == null) {
-                        logger.info("Got null replacement node on position " + i);
+                        logger.info("Got null replacement node on position {}", i);
                         continue;
                     }
-                    logger.debug("replacing " + "subNode" + " with " + replacementNode);
+                    logger.debug("replacing subNode with {}", replacementNode);
                     arrayNode.set(i, replacementNode);
                    
                 } else {
@@ -188,16 +188,16 @@ public class JsonReferenceProcessor {
                 String key = field.getKey();
                 JsonNode subNode = field.getValue();
 
-                logger.trace("key=" + key);
+                logger.trace("key={}", key);
 
                 if (JsonReferenceNode.is(subNode)) {
 
                     JsonNode replacementNode = getReplacementNode(subNode, context);
                     if (replacementNode == null) {
-                        logger.info("Got null replacement node for key " + key);
+                        logger.info("Got null replacement node for key {}", key);
                         continue;
                     }
-                    logger.debug("replacing " + "subNode" + " with " + replacementNode);
+                    logger.debug("replacing subNode with {}", replacementNode);
                     objectNode.set(key, replacementNode);
                 } else {
                     process(context, subNode);
@@ -219,7 +219,7 @@ public class JsonReferenceProcessor {
         }
 
         if (stopOnCircular && processed.contains(absRef)) {
-            logger.debug("skipping on ref: " + absRef);
+            logger.debug("skipping on ref: {}", absRef);
             return null;
         }
         // add ref to processed set for detection loop in recursion
@@ -252,7 +252,7 @@ public class JsonReferenceProcessor {
         URL absoluteReferencedUrl;
         URI refUri = ref.getUri();
 
-        logger.debug("dereferencing " + ref);
+        logger.debug("dereferencing {}", ref);
 
         if (ref.isLocal()) {
             absoluteReferencedUrl = context.getUrl();
@@ -317,7 +317,7 @@ public class JsonReferenceProcessor {
             throw new JsonReferenceException("Cannot cache null object.");
         }
         if (cacheInMemory && !cache.contains(any)) {
-            logger.debug("Putting into the cache: " + any);
+            logger.debug("Putting into the cache: {}", any);
             URL url;
             if (any instanceof URL) {
                 url = (URL) any;
