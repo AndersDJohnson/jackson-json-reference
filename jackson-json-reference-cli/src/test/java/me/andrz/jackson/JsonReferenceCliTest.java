@@ -2,8 +2,6 @@ package me.andrz.jackson;
 
 import org.junit.Test;
 
-import java.io.File;
-
 /**
  * Created by anders on 11/21/15.
  */
