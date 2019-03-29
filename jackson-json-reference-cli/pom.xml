@@ -1,25 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
     <name>jackson-json-reference-cli</name>
     <groupId>me.andrz.jackson</groupId>
     <artifactId>jackson-json-reference-cli</artifactId>
     <version>0.3.2-SNAPSHOT</version>
     <url>https://github.com/AndersDJohnson/jackson-json-reference</url>
     <description>JSON Reference for Java with Jackson.</description>
-
     <parent>
         <groupId>me.andrz.jackson</groupId>
         <artifactId>jackson-json-reference</artifactId>
         <version>0.3.2-SNAPSHOT</version>
     </parent>
-
     <properties>
         <github.user>AndersDJohnson</github.user>
         <github.repo>jackson-json-reference</github.repo>
     </properties>
-
     <developers>
         <developer>
             <id>AndersDJohnson</id>
@@ -35,7 +31,6 @@
             </properties>
         </developer>
     </developers>
-
     <licenses>
         <license>
             <name>Apache License, Version 2.0</name>
@@ -49,14 +44,12 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
-
     <scm>
         <connection>scm:git:https://github.com/${github.user}/${github.repo}.git</connection>
         <developerConnection>scm:git:git@github.com:${github.user}/${github.repo}.git</developerConnection>
         <url>https://github.com/${github.user}/${github.repo}</url>
         <tag>HEAD</tag>
     </scm>
-
     <distributionManagement>
         <snapshotRepository>
             <id>ossrh</id>
@@ -67,7 +60,6 @@
             <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
     </distributionManagement>
-
     <build>
         <plugins>
             <plugin>
@@ -203,7 +195,6 @@
             </plugin>
         </plugins>
     </build>
-
     <profiles>
         <profile>
             <id>release</id>
@@ -276,7 +267,6 @@
             </build>
         </profile>
     </profiles>
-
     <dependencies>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -311,7 +301,6 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
     <reporting>
         <plugins>
             <plugin>
@@ -329,5 +318,4 @@
             </plugin>
         </plugins>
     </reporting>
-
 </project>
