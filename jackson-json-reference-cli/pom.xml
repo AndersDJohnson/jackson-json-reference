@@ -4,13 +4,13 @@
     <name>jackson-json-reference-cli</name>
     <groupId>me.andrz.jackson</groupId>
     <artifactId>jackson-json-reference-cli</artifactId>
-    <version>0.3.2-SNAPSHOT</version>
+    <version>0.3.2</version>
     <url>https://github.com/AndersDJohnson/jackson-json-reference</url>
     <description>JSON Reference for Java with Jackson.</description>
     <parent>
         <groupId>me.andrz.jackson</groupId>
         <artifactId>jackson-json-reference</artifactId>
-        <version>0.3.2-SNAPSHOT</version>
+        <version>0.3.2</version>
     </parent>
     <properties>
         <github.user>AndersDJohnson</github.user>
@@ -48,7 +48,7 @@
         <connection>scm:git:https://github.com/${github.user}/${github.repo}.git</connection>
         <developerConnection>scm:git:git@github.com:${github.user}/${github.repo}.git</developerConnection>
         <url>https://github.com/${github.user}/${github.repo}</url>
-        <tag>HEAD</tag>
+        <tag>0.3.2</tag>
     </scm>
     <distributionManagement>
         <snapshotRepository>
@@ -286,7 +286,7 @@
         <dependency>
             <groupId>me.andrz.jackson</groupId>
             <artifactId>jackson-json-reference-core</artifactId>
-            <version>0.3.2-SNAPSHOT</version>
+            <version>0.3.2</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
