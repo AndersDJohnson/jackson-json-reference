@@ -1,6 +1,8 @@
 jackson-json-reference
 ==============
 
+> WARNING! Not being actively maintained.
+
 Parent:
 [![Build Status](https://travis-ci.org/AndersDJohnson/jackson-json-reference.png)](https://travis-ci.org/AndersDJohnson/jackson-json-reference)
 [![Codecov](https://img.shields.io/codecov/c/github/AndersDJohnson/jackson-json-reference.svg)](http://codecov.io/github/AndersDJohnson/jackson-json-reference)
