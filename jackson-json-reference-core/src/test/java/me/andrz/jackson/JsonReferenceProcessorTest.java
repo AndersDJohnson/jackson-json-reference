@@ -28,11 +28,11 @@ public class JsonReferenceProcessorTest {
 
     private static final String IGNORE_OFFLINE = "ignoring offline";
 
-    private static final String JSON_SCHEMA_URL = "http://json-schema.org/schema";
+    private static final String JSON_SCHEMA_URL = "http://json-schema.org/draft/2020-12/schema";
     /**
      * Length in bytes of JSON at {@link this.JSON_SCHEMA_URL}.
      */
-    private static final long JSON_SCHEMA_LENGTH = 1024L * 2; // 2 KB
+    private static final long JSON_SCHEMA_LENGTH = 1024L; // 1 KB
 
     private static final String rootClassPath = JsonReferenceProcessorTest.class.getResource("/").getFile();
 
